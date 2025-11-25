@@ -10,7 +10,6 @@ namespace MovieDatabase.Api.Mutations;
 [ExtendObjectType("Mutation")]
 public class TokenMutations
 {
-    // TODO: Finish implementing token revocation by adding integration tests and verify if it's passing
     [AllowAnonymous]
     public async Task<RevokeTokenDto> Revoke(RevokeTokenRequest input, [Service] IUnitOfWork unitOfWork, [Service] IDispatcher dispatcher)
     {
