@@ -24,7 +24,6 @@ var executor = await services.GetRequiredService<IRequestExecutorResolver>()
 var schema = executor.Schema;
 var sdl = schema.Print();
 
-
 var outputPath = Path.Combine(
     Environment.CurrentDirectory,
     "test/MovieDatabase.IntegrationTests/schema.graphql");

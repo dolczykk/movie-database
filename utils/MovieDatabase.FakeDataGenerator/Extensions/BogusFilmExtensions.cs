@@ -27,9 +27,10 @@ internal static class BogusFilmExtensions
         return new Faker<Film>(faker.Locale)
             .CustomInstantiator(fkr =>
             {
-                Movie template = templates.Count > 0
+                var template = templates.Count > 0
                     ? templates[fkr.Random.Int(0, templates.Count - 1)]
                     : new Movie();
+                
                 return GenerateFilmFromTemplateCore(fkr, template);
             });
     }
@@ -42,15 +43,14 @@ internal static class BogusFilmExtensions
             return [];
         }
 
-        List<Film>? films = faker.FilmFromTemplates(templates).Generate(count);
-
+        var films = faker.FilmFromTemplates(templates).Generate(count);
         if (creatorIds is not { Count: > 0 })
         {
             return films;
         }
 
-        IList<string> creatorPool = creatorIds as IList<string> ?? creatorIds.ToList();
-        foreach (Film film in films)
+        var creatorPool = creatorIds as IList<string> ?? creatorIds.ToList();
+        foreach (var film in films)
         {
             film.CreatorId = faker.Random.ListItem(creatorPool);
         }
@@ -58,60 +58,47 @@ internal static class BogusFilmExtensions
         return films;
     }
 
-    public static (List<Film> Films, List<User> Users) GenerateFilmsWithUsers(
+    internal static (List<Film> Films, List<User> Users) GenerateFilmsWithUsers(
         this Faker faker,
         IReadOnlyList<Movie> templates,
         int filmCount,
-        int userCount = 100)
+        int userCount)
     {
-        List<User> users = faker.GenerateUsersWithRoles(userCount);
-        List<string> userIds = users.Select(u => u.Id.ToString()).ToList();
-        List<Film> films = faker.GenerateFilmsFromTemplates(templates, filmCount, userIds);
+        var users = faker.GenerateUsersWithRoles(userCount);
+        var userIds = users.Select(u => u.Id.ToString()).ToList();
+        var films = faker.GenerateFilmsFromTemplates(templates, filmCount, userIds);
 
         return (films, users);
     }
 
     private static Film GenerateFilmFromTemplateCore(Faker faker, Movie template)
     {
-        DateTime createdAt = DateTime.UtcNow;
-        DateOnly releaseDate = template.DateAdded is not null
-            ? DateOnly.FromDateTime(template.DateAdded.Value)
-            : DateOnly.FromDateTime(faker.Date.Past(35));
+        var createdAt = DateTime.UtcNow;
 
-        List<string> castEntries = ParseCast(template);
-        List<Actor> actors = castEntries.Count > 0
-            ? castEntries
-                .Select(full => new Actor
-                {
-                    Id = Guid.NewGuid(),
-                    Name = FilmUtils.NamePart(full),
-                    Surname = FilmUtils.SurnamePart(full),
-                    CreatedAt = createdAt
-                })
-                .ToList()
-            : GenerateRandomActors(faker, createdAt);
+        // Generate actors randomly (ignore template cast entries)
+        var actors = GenerateRandomActors(faker, createdAt);
 
-        List<Genre> genres = faker.Random.ListItems(GenrePool, faker.Random.Int(1, 3))
+        var genres = faker.Random.ListItems(GenrePool, faker.Random.Int(1, 3))
             .Select(name => new Genre { Id = Guid.NewGuid(), Name = name, CreatedAt = createdAt })
             .ToList();
 
-        string title = string.IsNullOrWhiteSpace(template.Title)
+         var title = string.IsNullOrWhiteSpace(template.Title)
             ? GenerateRandomTitle(faker)
             : template.Title!.Trim();
 
-        string? description = string.IsNullOrWhiteSpace(template.Description)
+        var description = string.IsNullOrWhiteSpace(template.Description)
             ? faker.Lorem.Paragraph()
             : template.Description!.Trim();
 
-        string directorName = FilmUtils.NamePart(template.Director);
-        string directorSurname = FilmUtils.SurnamePart(template.Director);
+        var directorName = NamePart(template.Director);
+        var directorSurname = SurnamePart(template.Director);
 
         return new Film
         {
             Id = Guid.NewGuid(),
             Title = title,
             Description = description,
-            ReleaseDate = releaseDate,
+            ReleaseDate = DateOnly.FromDateTime(faker.Date.Between(DateTime.MinValue, DateTime.Now)),
             CreatedAt = createdAt,
             CreatorId = Guid.NewGuid().ToString(),
             Director = new DirectorInfo
@@ -136,26 +123,18 @@ internal static class BogusFilmExtensions
 
     private static string GenerateRandomTitle(Faker faker)
     {
-        string? descriptor = faker.Hacker.Adjective();
-        string? noun = faker.Random.Word();
-        string? suffix = faker.Random.ArrayElement(["Chronicles", "Project", "Memoir", "Odyssey", "Protocol"]);
-        TextInfo textInfo = CultureInfo.InvariantCulture.TextInfo;
+        var descriptor = faker.Hacker.Adjective();
+        var noun = faker.Random.Word();
+        var textInfo = CultureInfo.InvariantCulture.TextInfo;
 
-        return textInfo.ToTitleCase($"{descriptor} {noun} {suffix}");
+        return textInfo.ToTitleCase($"{descriptor} {noun}");
     }
 
-    private static List<string> ParseCast(Movie template)
-    {
-        return (template.Cast ?? string.Empty)
-            .Split(',', StringSplitOptions.RemoveEmptyEntries)
-            .Select(s => s.Trim())
-            .Where(s => !string.IsNullOrWhiteSpace(s))
-            .ToList();
-    }
 
     private static List<Actor> GenerateRandomActors(Faker faker, DateTime createdAt)
     {
-        int count = faker.Random.Int(2, 5);
+        var count = faker.Random.Int(2, 5);
+        
         return Enumerable.Range(0, count)
             .Select(_ => new Actor
             {
@@ -165,5 +144,29 @@ internal static class BogusFilmExtensions
                 CreatedAt = createdAt
             })
             .ToList();
+    }
+
+    private static string NamePart(string? full)
+    {
+        if (string.IsNullOrWhiteSpace(full))
+        {
+            return string.Empty;
+        }
+
+        var parts = full.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        
+        return parts.Length > 0 ? parts[0] : full;
+    }
+
+    private static string SurnamePart(string? full)
+    {
+        if (string.IsNullOrWhiteSpace(full))
+        {
+            return string.Empty;
+        }
+
+        var parts = full.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        
+        return parts.Length > 1 ? string.Join(' ', parts.Skip(1)) : string.Empty;
     }
 }

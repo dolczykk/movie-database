@@ -1,34 +1,45 @@
 ﻿using System.CommandLine;
-using System.CommandLine.Parsing;
 using System.Text.Json;
 
 using Bogus;
 
-using MovieDatabase.Api.Core.Documents.Films;
-using MovieDatabase.Api.Core.Documents.Users;
 using MovieDatabase.FakeDataGenerator;
 using MovieDatabase.FakeDataGenerator.Extensions;
-using MovieDatabase.FakeDataGenerator.Models;
 
-Option<FileInfo> moviesFileOption = new("--file")
+const string outputPath = "./src/Api/MovieDatabase.Api.Infrastructure/Data";
+
+var moviesFileOption = new Option<FileInfo>("--file")
 {
-    Description = "Path to the CSV file containing movie data", Required = true
+    Description = "Path to the CSV file containing movie data",
+    Required = true
 };
 
-Option<int> countOption = new("--count")
+var filmsCountOption = new Option<int>("--films-count")
 {
     Description = "If > 0, generate this many films using Bogus by sampling CSV rows as templates",
     DefaultValueFactory = _ => 100,
     Required = false
 };
 
-RootCommand rootCommand = new("Movie Database Fake Data Generator") { moviesFileOption, countOption };
+var usersCountOption = new Option<int>("--users-count")
+{
+    Description = "If > 0, generate this many users; otherwise, generate one film per CSV row",
+    DefaultValueFactory = _ => 10,
+    Required = false
+};
 
-ParseResult parseResult = rootCommand.Parse(args);
+var rootCommand = new RootCommand("Movie Database Fake Data Generator")
+{
+    moviesFileOption,
+    filmsCountOption,
+    usersCountOption
+};
+
+var parseResult = rootCommand.Parse(args);
 
 if (parseResult.Errors.Count > 0)
 {
-    foreach (ParseError error in parseResult.Errors)
+    foreach (var error in parseResult.Errors)
     {
         Console.Error.WriteLine(error.Message);
     }
@@ -36,8 +47,9 @@ if (parseResult.Errors.Count > 0)
     return -1;
 }
 
-string moviesCsvPath = parseResult.GetValue(moviesFileOption)!.FullName;
-int requestedCount = parseResult.GetValue(countOption);
+var moviesCsvPath = parseResult.GetValue(moviesFileOption)!.FullName;
+var requestedCount = parseResult.GetValue(filmsCountOption);
+var requestedUsersCount = parseResult.GetValue(usersCountOption);
 
 if (!File.Exists(moviesCsvPath))
 {
@@ -45,7 +57,7 @@ if (!File.Exists(moviesCsvPath))
     return -2;
 }
 
-List<Movie> movies = FilmDataLoader.LoadMoviesFromCsv(moviesCsvPath);
+var movies = FilmDataLoader.LoadMoviesFromCsv(moviesCsvPath);
 
 if (movies.Count == 0)
 {
@@ -53,19 +65,23 @@ if (movies.Count == 0)
     return -3;
 }
 
-Faker faker = new();
+var faker = new Faker();
 
-int filmCount = requestedCount > 0 ? requestedCount : movies.Count;
+var filmCount = requestedCount > 0 ? requestedCount : movies.Count;
+var userCount = requestedUsersCount > 0 ? requestedUsersCount : filmCount;
 
-(List<Film> filmsList, List<User> users) = faker.GenerateFilmsWithUsers(movies, filmCount);
+var (filmsList, users) = faker.GenerateFilmsWithUsers(movies, filmCount, userCount);
 
-string outPath = Path.ChangeExtension(moviesCsvPath, ".films.json");
-string usersOutPath = Path.ChangeExtension(moviesCsvPath, ".users.json");
+const string filmsFileName = "films.json";
+const string usersFileName = "users.json";
 
-await using FileStream fs = File.Create(outPath);
+string outPath = Path.Join(outputPath, filmsFileName);
+string usersOutPath = Path.Join(outputPath, usersFileName);
+
+await using var fs = File.Create(outPath);
 await JsonSerializer.SerializeAsync(fs, filmsList);
 
-await using FileStream usersStream = File.Create(usersOutPath);
+await using var usersStream = File.Create(usersOutPath);
 await JsonSerializer.SerializeAsync(usersStream, users);
 
 Console.WriteLine($"Wrote {filmsList.Count} films to {outPath}");

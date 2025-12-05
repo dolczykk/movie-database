@@ -14,7 +14,7 @@ if (isDevelopment)
 
 cosmos.AddCosmosDatabase(CosmosConfiguration.DbResourceName, CosmosConfiguration.DbName);
 
-var apiService = builder.AddProject<Projects.MovieDatabase_Api>(ApiConfiguration.ModuleName)
+builder.AddProject<Projects.MovieDatabase_Api>(ApiConfiguration.ModuleName)
     .WithReference(cosmos)
     .WaitFor(cosmos);
 

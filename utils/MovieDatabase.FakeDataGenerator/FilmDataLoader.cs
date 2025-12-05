@@ -6,12 +6,12 @@ using MovieDatabase.FakeDataGenerator.Models;
 
 namespace MovieDatabase.FakeDataGenerator;
 
-public static class FilmDataLoader
+internal static class FilmDataLoader
 {
-    public static List<Movie> LoadMoviesFromCsv(string moviesFilePath)
+    internal static List<Movie> LoadMoviesFromCsv(string moviesFilePath)
     {
-        using StreamReader reader = new(moviesFilePath);
-        using CsvReader csv = new(reader, CultureInfo.InvariantCulture);
+        using var reader = new StreamReader(moviesFilePath);
+        using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
 
         return csv.GetRecords<Movie>().ToList();
     }

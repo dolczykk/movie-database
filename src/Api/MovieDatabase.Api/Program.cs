@@ -8,7 +8,22 @@ using MovieDatabase.SharedKernel.Configurations;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.AddCosmosDbContext<AppDbContext>(CosmosConfiguration.ModuleName, databaseName: CosmosConfiguration.DbName);
+builder.AddCosmosDbContext<AppDbContext>(CosmosConfiguration.ModuleName, databaseName: CosmosConfiguration.DbName, configureDbContextOptions:
+    optionsBuilder =>
+    {
+        optionsBuilder.UseAsyncSeeding(async (seed, created, ct) =>
+        {
+            if (!created)
+            {
+                return;
+            }
+            
+            await DbSeeder.SeedUsers(seed, ct);
+            await DbSeeder.SeedFilms(seed, ct);
+            
+            await seed.SaveChangesAsync(ct);
+        });
+    });
 
 builder.Services.AddApplicationDefaults();
 builder.Services.AddInfrastructureDefaults(builder.Configuration);
@@ -35,13 +50,10 @@ builder.Services
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
-{
-    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    await dbContext.Database.EnsureCreatedAsync();
-    
-    await CosmosSeeder.SeedAsync(dbContext);
-}
+using var scope = app.Services.CreateScope();
+
+var applicationDbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+await applicationDbContext.Database.EnsureCreatedAsync();
 
 app.UseHttpsRedirection();
 app.UseAuthentication();
@@ -51,5 +63,4 @@ app.MapGraphQL();
 
 app.Run();
 
-public partial class Program { }
-
+public partial class Program;
