@@ -35,4 +35,10 @@
     <EmbeddedResource Include="appsettings.IntegrationTest.json" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="Graphql\**\*.graphql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

@@ -24,7 +24,7 @@ public static class GraphQLHelper
         {
             throw new HttpRequestException(
                 $"Failed to execute GraphQL query. Ensure the API is running and accessible. " +
-                $"Base Address: {client.BaseAddress}. Original error: {ex.Message}", 
+                $"Base Address: {client.BaseAddress}. Original error: {ex.Message}",
                 ex);
         }
     }
@@ -64,5 +64,18 @@ public static class GraphQLHelper
         object? variables = null)
     {
         return await ExecuteQueryAsync<T>(client, mutation, variables);
+    }
+
+    public static string LoadQueryFromFile(string relativePath)
+    {
+        var baseDir = AppContext.BaseDirectory;
+        var fullPath = Path.Combine(baseDir, relativePath.Replace('/', Path.DirectorySeparatorChar));
+
+        if (!File.Exists(fullPath))
+        {
+            throw new FileNotFoundException($"GraphQL file not found: {fullPath}");
+        }
+
+        return File.ReadAllText(fullPath);
     }
 }

@@ -1,6 +1,5 @@
 ﻿namespace MovieDatabase.IntegrationTests.Responses.Producers;
 
-public class ProducersConnection
-{
-    public List<ProducerQueryDto> Nodes { get; set; } = new();
-}
+public record ProducersConnection(
+    List<ProducerQueryDto> Nodes
+);

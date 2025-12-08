@@ -1,6 +1,5 @@
 ﻿namespace MovieDatabase.IntegrationTests.Responses.Producers;
 
-public class ProducersResponse
-{
-    public ProducersConnection Producers { get; set; } = new();
-}
+public record ProducersResponse(
+    ProducersConnection Producers
+);

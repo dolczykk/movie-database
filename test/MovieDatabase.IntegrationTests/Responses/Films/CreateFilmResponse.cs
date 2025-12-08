@@ -2,7 +2,6 @@
 
 namespace MovieDatabase.IntegrationTests.Responses.Films;
 
-public class CreateFilmResponse
-{
-    public FilmDto CreateFilm { get; set; } = null!;
-}
+public record CreateFilmResponse(
+    FilmDto CreateFilm
+);

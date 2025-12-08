@@ -59,40 +59,4 @@ public static class TestDataBuilder
             CreatorId = creatorId ?? Guid.NewGuid().ToString()
         };
     }
-
-    public static List<Actor> CreateActors(params (string Name, string Surname)[] actors)
-    {
-        if (actors.Length == 0)
-        {
-            return [new Actor { Name = "John", Surname = "Doe" }];
-        }
-
-        return actors.Select(a => new Actor { Name = a.Name, Surname = a.Surname }).ToList();
-    }
-
-    public static List<Genre> CreateGenres(params string[] genreNames)
-    {
-        if (genreNames.Length == 0)
-        {
-            return [new Genre { Name = "Drama" }];
-        }
-
-        return genreNames.Select(g => new Genre { Name = g }).ToList();
-    }
-
-    public static List<Film> CreateFilms(int count)
-    {
-        var films = new List<Film>();
-        
-        for (int i = 0; i < count; i++)
-        {
-            films.Add(CreateValidFilm(
-                title: $"Test Film {i}",
-                releaseDate: new DateOnly(2024, 1, i + 1)
-            ));
-        }
-        
-        return films;
-    }
 }
-

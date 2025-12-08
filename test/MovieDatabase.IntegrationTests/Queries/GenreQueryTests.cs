@@ -14,18 +14,13 @@ public class GenreQueryTests(AspireAppHostFixture fixture)
     [Fact]
     public async Task GetGenres_WithoutFilter_ShouldReturnAllGenres()
     {
-        const string query = """
-                                 query {
-                                     genres(first: 10) {
-                                         nodes {
-                                             id
-                                             name
-                                         }
-                                     }
-                                 }
-                             """;
+        // Arrange
+        var query = GraphQLHelper.LoadQueryFromFile("Graphql/Queries/GetGenres.graphql");
 
+        // Act
         var response = await GraphQLHelper.ExecuteQueryAsync<GenresResponse>(_httpClient, query);
+
+        // Assert
         response.ShouldNotBeNull();
         response.Errors.ShouldBeNull();
         response.Data.ShouldNotBeNull();

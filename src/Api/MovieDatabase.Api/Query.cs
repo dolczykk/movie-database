@@ -17,7 +17,7 @@ public class Query
     public IQueryable<Film> Films(
         [Service] AppDbContext dbContext)
         => BaseQuery(dbContext);
-    
+
     [UsePaging]
     [UseFiltering]
     [UseSorting]
@@ -25,7 +25,7 @@ public class Query
         [Service] AppDbContext dbContext)
         => BaseQuery(dbContext)
             .SelectMany(f => f.Actors);
-    
+
     [UsePaging]
     [UseFiltering]
     [UseSorting]
@@ -33,13 +33,13 @@ public class Query
         [Service] AppDbContext dbContext)
         => BaseQuery(dbContext)
             .SelectMany(f => f.Genres);
-    
+
     [UsePaging]
     [UseFiltering]
     [UseSorting]
     public IQueryable<DirectorInfo> Directors(
         [Service] AppDbContext dbContext)
-        => BaseQuery(dbContext) 
+        => BaseQuery(dbContext)
             .Select(f => f.Director);
 
     [UsePaging]

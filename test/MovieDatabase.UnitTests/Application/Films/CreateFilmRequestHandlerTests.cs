@@ -1,11 +1,13 @@
-using Shouldly;
 using MovieDatabase.Api.Application.Films.CreateFilm;
 using MovieDatabase.Api.Core.Documents.Films;
 using MovieDatabase.Api.Core.Exceptions.Films;
 using MovieDatabase.Api.Infrastructure.Db;
 using MovieDatabase.Api.Infrastructure.Db.Repositories;
 using MovieDatabase.UnitTests.Helpers;
+
 using NSubstitute;
+
+using Shouldly;
 
 namespace MovieDatabase.UnitTests.Application.Films;
 
@@ -25,14 +27,17 @@ public class CreateFilmRequestHandlerTests
     [Fact]
     public async Task HandleAsync_WithValidData_ShouldCreateFilm()
     {
+        // Arrange
         var request = CreateValidRequest();
         _mockFilmRepository.GetByTitle(Arg.Any<string>())
             .Returns(Task.FromResult<Film?>(null));
 
+        // Act
         var result = await _handler.HandleAsync(request);
 
+        // Assert
         result.ShouldNotBeNull();
-        await _mockFilmRepository.Received(1).Add(Arg.Is<Film>(f =>
+        _mockFilmRepository.Received(1).Add(Arg.Is<Film>(f =>
             f.Title == request.Title &&
             f.ReleaseDate == request.ReleaseDate));
         await _mockUnitOfWork.Received(1).Commit();
@@ -41,12 +46,15 @@ public class CreateFilmRequestHandlerTests
     [Fact]
     public async Task HandleAsync_WithValidData_ShouldReturnFilmDto()
     {
+        // Arrange
         var request = CreateValidRequest();
         _mockFilmRepository.GetByTitle(Arg.Any<string>())
             .Returns(Task.FromResult<Film?>(null));
 
+        // Act
         var result = await _handler.HandleAsync(request);
 
+        // Assert
         result.ShouldNotBeNull();
         result.Title.ShouldBe(request.Title);
         result.ReleaseDate.ShouldBe(request.ReleaseDate);
@@ -61,23 +69,27 @@ public class CreateFilmRequestHandlerTests
     [Fact]
     public async Task HandleAsync_WithDuplicateTitle_ShouldThrowFilmExistsException()
     {
+        // Arrange
         var request = CreateValidRequest();
         var existingFilm = TestDataBuilder.CreateValidFilm(title: request.Title);
 
         _mockFilmRepository.GetByTitle(request.Title)
             .Returns(Task.FromResult<Film?>(existingFilm));
 
-        await Assert.ThrowsAsync<FilmExistsApplicationException>(
-            () => _handler.HandleAsync(request)
-        );
+        // Act
+        Func<Task> act = () => _handler.HandleAsync(request);
 
-        await _mockFilmRepository.DidNotReceive().Add(Arg.Any<Film>());
+        // Assert
+        await Should.ThrowAsync<FilmExistsApplicationException>(act);
+
+        _mockFilmRepository.DidNotReceive().Add(Arg.Any<Film>());
         await _mockUnitOfWork.DidNotReceive().Commit();
     }
 
     [Fact]
     public async Task HandleAsync_ShouldTrimTitleWhitespace()
     {
+        // Arrange
         var request = new CreateFilmRequest(
             Title: "  Test Film  ",
             ReleaseDate: new DateOnly(2024, 1, 1),
@@ -86,14 +98,17 @@ public class CreateFilmRequestHandlerTests
             Genres: new[] { new CreateFilmRequest.GenrePlaceholder(null, "Drama") },
             Director: new CreateFilmRequest.DirectorPlaceholder(null, "Jane", "Smith"),
             Producer: new CreateFilmRequest.ProducerPlaceholder(null, "Test Studios")
-        ) { CreatorId = Guid.NewGuid().ToString() };
+        )
+        { CreatorId = Guid.NewGuid().ToString() };
 
         _mockFilmRepository.GetByTitle(Arg.Any<string>())
             .Returns(Task.FromResult<Film?>(null));
 
+        // Act
         await _handler.HandleAsync(request);
 
-        await _mockFilmRepository.Received(1).Add(Arg.Is<Film>(f =>
+        // Assert
+        _mockFilmRepository.Received(1).Add(Arg.Is<Film>(f =>
             f.Title == "Test Film" &&
             !f.Title.StartsWith(" ") &&
             !f.Title.EndsWith(" ")));
@@ -103,13 +118,16 @@ public class CreateFilmRequestHandlerTests
     [Fact]
     public async Task HandleAsync_ShouldTrimDescriptionWhitespace()
     {
+        // Arrange
         var request = CreateValidRequest() with { Description = "  Test Description  " };
         _mockFilmRepository.GetByTitle(Arg.Any<string>())
             .Returns(Task.FromResult<Film?>(null));
 
+        // Act
         await _handler.HandleAsync(request);
 
-        await _mockFilmRepository.Received(1).Add(Arg.Is<Film>(f =>
+        // Assert
+        _mockFilmRepository.Received(1).Add(Arg.Is<Film>(f =>
             f.Description == "Test Description" &&
             !f.Description.StartsWith(" ") &&
             !f.Description.EndsWith(" ")));
@@ -119,13 +137,16 @@ public class CreateFilmRequestHandlerTests
     [Fact]
     public async Task HandleAsync_WithNullDescription_ShouldSetEmptyString()
     {
+        // Arrange
         var request = CreateValidRequest() with { Description = null };
         _mockFilmRepository.GetByTitle(Arg.Any<string>())
             .Returns(Task.FromResult<Film?>(null));
 
+        // Act
         await _handler.HandleAsync(request);
 
-        await _mockFilmRepository.Received(1).Add(Arg.Is<Film>(f =>
+        // Assert
+        _mockFilmRepository.Received(1).Add(Arg.Is<Film>(f =>
             f.Description == string.Empty));
         await _mockUnitOfWork.Received(1).Commit();
     }
@@ -133,6 +154,7 @@ public class CreateFilmRequestHandlerTests
     [Fact]
     public async Task HandleAsync_ShouldMapActorsCorrectly()
     {
+        // Arrange
         var request = new CreateFilmRequest(
             Title: "Test Film",
             ReleaseDate: new DateOnly(2024, 1, 1),
@@ -145,14 +167,17 @@ public class CreateFilmRequestHandlerTests
             Genres: new[] { new CreateFilmRequest.GenrePlaceholder(null, "Drama") },
             Director: new CreateFilmRequest.DirectorPlaceholder(null, "Director", "Name"),
             Producer: new CreateFilmRequest.ProducerPlaceholder(null, "Producer")
-        ) { CreatorId = Guid.NewGuid().ToString() };
+        )
+        { CreatorId = Guid.NewGuid().ToString() };
 
         _mockFilmRepository.GetByTitle(Arg.Any<string>())
             .Returns(Task.FromResult<Film?>(null));
 
+        // Act
         await _handler.HandleAsync(request);
 
-        await _mockFilmRepository.Received(1).Add(Arg.Is<Film>(f =>
+        // Assert
+        _mockFilmRepository.Received(1).Add(Arg.Is<Film>(f =>
             f.Actors.Count == 2 &&
             f.Actors[0].Name == "John" &&
             f.Actors[0].Surname == "Doe" &&
@@ -164,6 +189,7 @@ public class CreateFilmRequestHandlerTests
     [Fact]
     public async Task HandleAsync_ShouldMapGenresCorrectly()
     {
+        // Arrange
         var request = new CreateFilmRequest(
             "Test Film",
             new DateOnly(2024, 1, 1),
@@ -176,14 +202,17 @@ public class CreateFilmRequestHandlerTests
             ],
             Director: new CreateFilmRequest.DirectorPlaceholder(null, "Director", "Name"),
             Producer: new CreateFilmRequest.ProducerPlaceholder(null, "Producer")
-        ) { CreatorId = Guid.NewGuid().ToString() };
+        )
+        { CreatorId = Guid.NewGuid().ToString() };
 
         _mockFilmRepository.GetByTitle(Arg.Any<string>())
             .Returns(Task.FromResult<Film?>(null));
 
+        // Act
         await _handler.HandleAsync(request);
 
-        await _mockFilmRepository.Received(1).Add(Arg.Is<Film>(f =>
+        // Assert
+        _mockFilmRepository.Received(1).Add(Arg.Is<Film>(f =>
             f.Genres.Count == 2 &&
             f.Genres[0].Name == "Drama" &&
             f.Genres[1].Name == "Thriller"));
@@ -193,13 +222,16 @@ public class CreateFilmRequestHandlerTests
     [Fact]
     public async Task HandleAsync_ShouldMapDirectorCorrectly()
     {
+        // Arrange
         var request = CreateValidRequest();
         _mockFilmRepository.GetByTitle(Arg.Any<string>())
             .Returns(Task.FromResult<Film?>(null));
 
+        // Act
         await _handler.HandleAsync(request);
 
-        await _mockFilmRepository.Received(1).Add(Arg.Is<Film>(f =>
+        // Assert
+        _mockFilmRepository.Received(1).Add(Arg.Is<Film>(f =>
             f.Director.Name == request.Director.Name &&
             f.Director.Surname == request.Director.Surname));
         await _mockUnitOfWork.Received(1).Commit();
@@ -208,13 +240,16 @@ public class CreateFilmRequestHandlerTests
     [Fact]
     public async Task HandleAsync_ShouldMapProducerCorrectly()
     {
+        // Arrange
         var request = CreateValidRequest();
         _mockFilmRepository.GetByTitle(Arg.Any<string>())
             .Returns(Task.FromResult<Film?>(null));
 
+        // Act
         await _handler.HandleAsync(request);
 
-        await _mockFilmRepository.Received(1).Add(Arg.Is<Film>(f =>
+        // Assert
+        _mockFilmRepository.Received(1).Add(Arg.Is<Film>(f =>
             f.Producer.Name == request.Producer.Name));
         await _mockUnitOfWork.Received(1).Commit();
     }
@@ -222,14 +257,17 @@ public class CreateFilmRequestHandlerTests
     [Fact]
     public async Task HandleAsync_ShouldSetCreatorId()
     {
+        // Arrange
         var creatorId = Guid.NewGuid().ToString();
         var request = CreateValidRequest() with { CreatorId = creatorId };
         _mockFilmRepository.GetByTitle(Arg.Any<string>())
             .Returns(Task.FromResult<Film?>(null));
 
+        // Act
         await _handler.HandleAsync(request);
 
-        await _mockFilmRepository.Received(1).Add(Arg.Is<Film>(f =>
+        // Assert
+        _mockFilmRepository.Received(1).Add(Arg.Is<Film>(f =>
             f.CreatorId == creatorId));
         await _mockUnitOfWork.Received(1).Commit();
     }
@@ -237,13 +275,16 @@ public class CreateFilmRequestHandlerTests
     [Fact]
     public async Task HandleAsync_ShouldCallRepositoryAddOnce()
     {
+        // Arrange
         var request = CreateValidRequest();
         _mockFilmRepository.GetByTitle(Arg.Any<string>())
             .Returns(Task.FromResult<Film?>(null));
 
+        // Act
         await _handler.HandleAsync(request);
 
-        await _mockFilmRepository.Received(1).Add(Arg.Any<Film>());
+        // Assert
+        _mockFilmRepository.Received(1).Add(Arg.Any<Film>());
         await _mockFilmRepository.Received(1).GetByTitle(Arg.Any<string>());
         await _mockUnitOfWork.Received(1).Commit();
     }
@@ -254,12 +295,15 @@ public class CreateFilmRequestHandlerTests
     [InlineData("The Shawshank Redemption")]
     public async Task HandleAsync_WithVariousTitles_ShouldSucceed(string title)
     {
+        // Arrange
         var request = CreateValidRequest() with { Title = title };
         _mockFilmRepository.GetByTitle(Arg.Any<string>())
             .Returns(Task.FromResult<Film?>(null));
 
+        // Act
         var result = await _handler.HandleAsync(request);
 
+        // Assert
         result.ShouldNotBeNull();
         result.Title.ShouldBe(title);
         await _mockUnitOfWork.Received(1).Commit();
@@ -268,6 +312,7 @@ public class CreateFilmRequestHandlerTests
     [Fact]
     public async Task HandleAsync_WithEmptyActorsList_ShouldCreateFilmWithNoActors()
     {
+        // Arrange
         var request = CreateValidRequest() with
         {
             Actors = []
@@ -275,8 +320,10 @@ public class CreateFilmRequestHandlerTests
         _mockFilmRepository.GetByTitle(Arg.Any<string>())
             .Returns(Task.FromResult<Film?>(null));
 
+        // Act
         var result = await _handler.HandleAsync(request);
 
+        // Assert
         result.ShouldNotBeNull();
         result.Actors.ShouldBeEmpty();
         await _mockUnitOfWork.Received(1).Commit();
@@ -304,4 +351,3 @@ public class CreateFilmRequestHandlerTests
         };
     }
 }
-

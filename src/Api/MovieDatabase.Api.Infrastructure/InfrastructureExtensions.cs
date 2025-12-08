@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+
 using MovieDatabase.Api.Infrastructure.Db;
 using MovieDatabase.Api.Infrastructure.Db.Repositories;
 
@@ -20,7 +21,7 @@ public static class InfrastructureExtensions
 
     private static IServiceCollection AddUnitOfWork(this IServiceCollection services)
         => services.AddScoped<IUnitOfWork, UnitOfWork>();
-    
+
     private static IServiceCollection AddRepositories(this IServiceCollection services)
     {
         services.AddScoped<IFilmRepository, FilmRepository>();
@@ -54,4 +55,3 @@ public static class InfrastructureExtensions
         return services;
     }
 }
-

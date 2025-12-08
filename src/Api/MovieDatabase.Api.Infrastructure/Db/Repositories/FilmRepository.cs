@@ -4,13 +4,11 @@ using MovieDatabase.Api.Core.Documents.Films;
 
 namespace MovieDatabase.Api.Infrastructure.Db.Repositories;
 
-public class FilmRepository(AppDbContext context) : IFilmRepository
+public sealed class FilmRepository(AppDbContext context) : IFilmRepository
 {
-    public async Task Add(Film film)
+    public void Add(Film film)
     {
         context.Films.Add(film);
-        
-        await context.SaveChangesAsync();
     }
 
     public async Task<Film?> GetByTitle(string title)
@@ -21,21 +19,17 @@ public class FilmRepository(AppDbContext context) : IFilmRepository
             .Where(f => f.Id == Guid.Parse(id))
             .SingleOrDefaultAsync();
 
-    public Task Delete(Film film)
+    public void Delete(Film film)
     {
         film.IsDeleted = true;
+
         context.Films.Update(film);
-        
-        return Task.CompletedTask;
     }
 
-    public Task Update(Film film)
+    public void Update(Film film)
     {
         film.UpdatedAt = DateTime.UtcNow;
-        
-        context.Films.Update(film);
 
-        return Task.CompletedTask;
+        context.Films.Update(film);
     }
 }
-

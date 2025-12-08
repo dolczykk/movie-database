@@ -1,0 +1,11 @@
+﻿mutation LoginUser($request: AuthenticateUserRequestInput!) {
+    loginUser(request: $request) {
+        token
+        expireTime
+        id
+        username
+        email
+        role
+    }
+}
+

@@ -9,9 +9,8 @@ using MovieDatabase.Api.Infrastructure.Db.Repositories;
 
 namespace MovieDatabase.Api.Application.Users.CreateUser;
 
-public class CreateUserRequestHandler(
+public sealed class CreateUserRequestHandler(
     IUserRepository userRepository,
-    IUnitOfWork unitOfWork,
     IJwtService jwtService
 ) : IRequestHandler<CreateUserRequest, UserCredentialsDto>
 {
@@ -31,16 +30,26 @@ public class CreateUserRequestHandler(
             Role = UserRoles.User
         };
 
-        await userRepository.Add(user);
+        var credentials = jwtService.GenerateJwtToken(user);
 
-        var (token, expireDate) = jwtService.GenerateJwtToken(user);
+        user.Tokens.Add(new ClaimToken
+        {
+            AccessToken = HashUtils.ComputeHash(credentials.AccessToken.Token),
+            RefreshToken = HashUtils.ComputeHash(credentials.RefreshToken.Token),
+            ExpiresAt = credentials.RefreshToken.ExpireDate,
+            CreatedAt = DateTime.UtcNow,
+            IsRevoked = false
+        });
 
         var userDto = UserCredentialsDto.From(user);
 
-        userDto.Token = token;
-        userDto.ExpireTime = expireDate;
+        userDto.Token = credentials.AccessToken.Token;
+        userDto.ExpireTime = credentials.AccessToken.ExpireDate;
 
-        await unitOfWork.Commit();
+        userDto.RefreshToken = credentials.RefreshToken.Token;
+        userDto.RefreshTokenExpireTime = credentials.RefreshToken.ExpireDate;
+
+        userRepository.Add(user);
 
         return userDto;
     }

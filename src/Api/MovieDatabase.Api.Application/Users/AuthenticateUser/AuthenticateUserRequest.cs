@@ -3,4 +3,7 @@ using MovieDatabase.Api.Core.Dtos.Users;
 
 namespace MovieDatabase.Api.Application.Users.AuthenticateUser;
 
-public record AuthenticateUserRequest(string Email, string Password) : IRequest<UserCredentialsDto>;
+public sealed record AuthenticateUserRequest(
+    string Email,
+    string Password
+) : IRequest<UserCredentialsDto>;

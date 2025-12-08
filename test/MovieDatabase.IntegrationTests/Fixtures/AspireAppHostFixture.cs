@@ -1,10 +1,10 @@
-﻿using Aspire.Hosting;
+﻿using System.Diagnostics;
+using System.Reflection;
+
+using Aspire.Hosting;
 using Aspire.Hosting.Testing;
 
 using Microsoft.Extensions.Configuration;
-
-using System.Reflection;
-using System.Diagnostics;
 
 namespace MovieDatabase.IntegrationTests.Fixtures;
 
@@ -13,19 +13,17 @@ public class AspireAppHostFixture : IAsyncLifetime
     private DistributedApplication? _app;
 
     public DistributedApplication App => _app ?? throw new InvalidOperationException("App not initialized");
-    
+
     public async Task InitializeAsync()
     {
-        // Load configuration and set as environment variables before creating the app host
         var config = LoadIntegrationTestConfiguration();
         SetJwtEnvironmentVariables(config);
-        
+
         var appHost = await DistributedApplicationTestingBuilder.CreateAsync<Projects.MovieDatabase_AppHost>();
-        
+
         _app = await appHost.BuildAsync();
         await _app.StartAsync();
 
-        // Wait for services to be ready
         await WaitForServicesAsync();
     }
 
@@ -35,15 +33,13 @@ public class AspireAppHostFixture : IAsyncLifetime
         Console.WriteLine("=== Starting Aspire Services Initialization ===");
         Console.WriteLine("Waiting for Cosmos DB emulator and API to start...");
         Console.WriteLine("Note: First run may take 60-90 seconds for Cosmos DB emulator initialization.");
-        
-        // Give significant time for Cosmos DB emulator to start (it can take 30-60 seconds on first run)
-        var initialWaitSeconds = 60;
+
+        const int initialWaitSeconds = 60;
         Console.WriteLine($"Initial wait: {initialWaitSeconds} seconds...");
         await Task.Delay(TimeSpan.FromSeconds(initialWaitSeconds));
-        
+
         Console.WriteLine($"Initial wait complete after {stopwatch.Elapsed.TotalSeconds:F1}s. Starting health check polling...");
-        
-        // Try to ping the API to ensure it's ready
+
         HttpClient? client = null;
         try
         {
@@ -55,34 +51,32 @@ public class AspireAppHostFixture : IAsyncLifetime
             Console.WriteLine($"Failed to create HTTP client: {ex.Message}");
             throw;
         }
-        
-        var maxRetries = 60; // 60 retries * 5 seconds = 300 seconds (5 minutes) total
+
+        const int maxRetries = 60;
         var retryCount = 0;
-        var retryDelaySeconds = 5;
-        
+        const int retryDelaySeconds = 5;
+
         while (retryCount < maxRetries)
         {
             try
             {
                 Console.WriteLine($"Health check attempt {retryCount + 1}/{maxRetries} (elapsed: {stopwatch.Elapsed.TotalSeconds:F1}s)...");
                 var response = await client.GetAsync("/graphql?sdl");
-                
+
                 if (response.IsSuccessStatusCode)
                 {
                     Console.WriteLine($"✓ API is ready after {stopwatch.Elapsed.TotalSeconds:F1}s!");
                     Console.WriteLine("Allowing extra time for database seeding to complete...");
-                    
+
                     // Additional delay to ensure seeding is complete
                     await Task.Delay(TimeSpan.FromSeconds(5));
-                    
+
                     stopwatch.Stop();
                     Console.WriteLine($"=== Initialization complete in {stopwatch.Elapsed.TotalSeconds:F1}s ===");
                     return;
                 }
-                else
-                {
-                    Console.WriteLine($"  API returned status: {response.StatusCode}");
-                }
+
+                Console.WriteLine($"  API returned status: {response.StatusCode}");
             }
             catch (HttpRequestException ex)
             {
@@ -96,16 +90,18 @@ public class AspireAppHostFixture : IAsyncLifetime
             {
                 Console.WriteLine($"  Unexpected error: {ex.GetType().Name} - {ex.Message}");
             }
-            
+
             if (retryCount < maxRetries - 1)
             {
                 await Task.Delay(TimeSpan.FromSeconds(retryDelaySeconds));
             }
             retryCount++;
         }
-        
+
         stopwatch.Stop();
-        var totalWaitTime = initialWaitSeconds + (maxRetries * retryDelaySeconds);
+
+        const int totalWaitTime = initialWaitSeconds + (maxRetries * retryDelaySeconds);
+
         throw new TimeoutException(
             $"API failed to become ready within {totalWaitTime} seconds ({stopwatch.Elapsed.TotalMinutes:F1} minutes). " +
             "The Cosmos DB emulator may need more time to start, or there may be an issue with the API startup. " +
@@ -115,8 +111,11 @@ public class AspireAppHostFixture : IAsyncLifetime
     private static IConfigurationRoot LoadIntegrationTestConfiguration()
     {
         var configBuilder = new ConfigurationBuilder();
+
         using var stream = GetIntegrationTestConfigStream();
+
         configBuilder.AddJsonStream(stream);
+
         return configBuilder.Build();
     }
 
@@ -125,7 +124,7 @@ public class AspireAppHostFixture : IAsyncLifetime
         var jwtKey = config["Jwt:Key"];
         var jwtIssuer = config["Jwt:Issuer"];
         var jwtAudience = config["Jwt:Audience"];
-        
+
         if (!string.IsNullOrEmpty(jwtKey))
         {
             Environment.SetEnvironmentVariable("Jwt__Key", jwtKey);
@@ -143,19 +142,20 @@ public class AspireAppHostFixture : IAsyncLifetime
     private static Stream GetIntegrationTestConfigStream()
     {
         var assembly = Assembly.GetExecutingAssembly();
-        var resourceName = "MovieDatabase.IntegrationTests.appsettings.IntegrationTest.json";
-        
+        const string resourceName = "MovieDatabase.IntegrationTests.appsettings.IntegrationTest.json";
+
         var stream = assembly.GetManifestResourceStream(resourceName);
-        
-        if (stream == null)
+
+        if (stream != null)
         {
-            var availableResources = string.Join(", ", assembly.GetManifestResourceNames());
-            throw new FileNotFoundException(
-                $"Embedded resource '{resourceName}' not found. " +
-                $"Available resources: {availableResources}");
+            return stream;
         }
-        
-        return stream;
+
+        var availableResources = string.Join(", ", assembly.GetManifestResourceNames());
+        throw new FileNotFoundException(
+            $"Embedded resource '{resourceName}' not found. " +
+            $"Available resources: {availableResources}");
+
     }
 
     public HttpClient CreateHttpClient(string resourceName)

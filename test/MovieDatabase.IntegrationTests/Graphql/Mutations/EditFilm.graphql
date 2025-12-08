@@ -1,0 +1,8 @@
+﻿mutation EditFilm($input: EditFilmInput!) {
+    editFilm(input: $input) {
+        id
+        title
+        description
+    }
+}
+

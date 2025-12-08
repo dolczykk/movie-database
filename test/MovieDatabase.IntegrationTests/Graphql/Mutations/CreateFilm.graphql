@@ -1,0 +1,9 @@
+﻿mutation CreateFilm($input: CreateFilmInput!) {
+    createFilm(input: $input) {
+        id
+        title
+        releaseDate
+        description
+    }
+}
+

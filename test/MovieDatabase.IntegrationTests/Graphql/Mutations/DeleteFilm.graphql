@@ -1,0 +1,5 @@
+﻿mutation DeleteFilm($filmId: String!) {
+    deleteFilm(filmId: $filmId)
+}
+
+

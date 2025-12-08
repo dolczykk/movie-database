@@ -1,23 +1,23 @@
 using Microsoft.Extensions.Hosting;
 
+using MovieDatabase.SharedKernel.Configurations;
+
 var builder = DistributedApplication.CreateBuilder(args);
 
-const string cosmosResourceName = "movies-database-cosmos";
-
 var isDevelopment = builder.Environment.IsDevelopment();
-var cosmos = builder.AddAzureCosmosDB(cosmosResourceName);
+var cosmos = builder.AddAzureCosmosDB(CosmosConfiguration.ModuleName);
 
 if (isDevelopment)
 {
     cosmos.RunAsEmulator();
 }
 
-cosmos.AddCosmosDatabase("movies-db", "Movies");
+cosmos.AddCosmosDatabase(CosmosConfiguration.DbResourceName, CosmosConfiguration.DbName);
 
-var apiService = builder.AddProject<Projects.MovieDatabase_Api>("movies-db-api")
+builder.AddProject<Projects.MovieDatabase_Api>(ApiConfiguration.ModuleName)
     .WithReference(cosmos)
     .WaitFor(cosmos);
 
 builder.Build().Run();
 
-public partial class Program { }
+public partial class Program;

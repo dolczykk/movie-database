@@ -1,0 +1,7 @@
+﻿mutation RegisterUser($request: CreateUserRequestInput!) {
+    registerUser(request: $request) {
+        token
+        expireTime
+    }
+}
+

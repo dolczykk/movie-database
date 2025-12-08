@@ -1,10 +1,5 @@
-﻿namespace MovieDatabase.IntegrationTests.Fixtures;
-
-[CollectionDefinition("AspireAppHost")]
-public class AspireAppHostCollection : ICollectionFixture<AspireAppHostFixture>
+﻿namespace MovieDatabase.IntegrationTests.Fixtures
 {
-    // This class has no code, and is never created. Its purpose is simply
-    // to be the place to apply [CollectionDefinition] and all the
-    // ICollectionFixture<> interfaces.
+    [CollectionDefinition("AspireAppHost")]
+    public class AspireAppHostCollection : ICollectionFixture<AspireAppHostFixture>;
 }
-

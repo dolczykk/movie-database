@@ -13,4 +13,6 @@ public class User : BaseDocument
 
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public UserRoles Role { get; set; }
+
+    public List<ClaimToken> Tokens { get; set; } = [];
 }

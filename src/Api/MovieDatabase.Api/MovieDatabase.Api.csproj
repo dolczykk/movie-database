@@ -17,8 +17,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Shared\MovieDatabase.SharedKernel\MovieDatabase.SharedKernel.csproj" />
     <ProjectReference Include="..\MovieDatabase.Api.Application\MovieDatabase.Api.Application.csproj" />
     <ProjectReference Include="..\MovieDatabase.Api.Infrastructure\MovieDatabase.Api.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Data\films.json" />
+    <None Include="Data\users.json" />
   </ItemGroup>
 
 </Project>

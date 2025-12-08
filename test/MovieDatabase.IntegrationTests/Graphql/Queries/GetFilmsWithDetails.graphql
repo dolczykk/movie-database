@@ -1,0 +1,27 @@
+﻿query {
+    films(first: 10) {
+        nodes {
+            id
+            title
+            actors {
+                id
+                name
+                surname
+            }
+            director {
+                id
+                name
+                surname
+            }
+            genres {
+                id
+                name
+            }
+            producer {
+                id
+                name
+            }
+        }
+    }
+}
+

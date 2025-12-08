@@ -1,0 +1,11 @@
+﻿query {
+    films(first: 10) {
+        nodes {
+            id
+            title
+            description
+            releaseDate
+        }
+    }
+}
+

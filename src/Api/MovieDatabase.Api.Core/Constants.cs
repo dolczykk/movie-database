@@ -2,5 +2,9 @@
 
 public static class Constants
 {
-    public const int DocumentsPageSize = 20;
+    public static class Queries
+    {
+        public const int MaxPageSize = 20;
+        public const int DefaultPageSize = 10;
+    }
 }

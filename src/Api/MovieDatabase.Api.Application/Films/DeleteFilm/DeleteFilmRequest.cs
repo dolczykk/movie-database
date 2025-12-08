@@ -2,4 +2,4 @@
 
 namespace MovieDatabase.Api.Application.Films.DeleteFilm;
 
-public record DeleteFilmRequest(string FilmId, string UserId) : IRequest<string>;
+public sealed record DeleteFilmRequest(string FilmId, string UserId) : IRequest<string>;

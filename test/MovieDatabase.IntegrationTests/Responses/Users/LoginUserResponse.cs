@@ -2,7 +2,6 @@
 
 namespace MovieDatabase.IntegrationTests.Responses.Users;
 
-public class LoginUserResponse
-{
-    public UserCredentialsDto LoginUser { get; set; } = null!;
-}
+public record LoginUserResponse(
+    UserCredentialsDto LoginUser
+);

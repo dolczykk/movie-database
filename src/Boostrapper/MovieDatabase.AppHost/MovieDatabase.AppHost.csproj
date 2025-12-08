@@ -17,6 +17,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Api\MovieDatabase.Api\MovieDatabase.Api.csproj" />
+    <ProjectReference Include="..\..\Shared\MovieDatabase.SharedKernel\MovieDatabase.SharedKernel.csproj">
+      <IsAspireProjectResource>false</IsAspireProjectResource>
+    </ProjectReference>
   </ItemGroup>
     
     

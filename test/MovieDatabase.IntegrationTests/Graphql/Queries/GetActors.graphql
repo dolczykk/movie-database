@@ -1,0 +1,10 @@
+﻿query {
+    actors(first: 10) {
+        nodes {
+            id
+            name
+            surname
+        }
+    }
+}
+

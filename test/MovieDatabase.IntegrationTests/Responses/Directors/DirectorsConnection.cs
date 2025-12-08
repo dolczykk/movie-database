@@ -1,6 +1,5 @@
 ﻿namespace MovieDatabase.IntegrationTests.Responses.Directors;
 
-public class DirectorsConnection
-{
-    public List<DirectorQueryDto> Nodes { get; set; } = new();
-}
+public record DirectorsConnection(
+    List<DirectorQueryDto> Nodes
+);

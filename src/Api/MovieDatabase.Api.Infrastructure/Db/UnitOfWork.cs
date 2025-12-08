@@ -1,6 +1,6 @@
 ﻿namespace MovieDatabase.Api.Infrastructure.Db;
 
-public class UnitOfWork(AppDbContext context) : IUnitOfWork, IDisposable, IAsyncDisposable
+public sealed class UnitOfWork(AppDbContext context) : IUnitOfWork, IDisposable, IAsyncDisposable
 {
     public async Task Commit()
     {

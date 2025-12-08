@@ -1,6 +1,6 @@
 ﻿namespace MovieDatabase.Api.Application.Films.EditFilm;
 
-public record EditFilmInput(
+public sealed record EditFilmInput(
     string Id,
     string Title,
     DateOnly ReleaseDate,
@@ -10,11 +10,11 @@ public record EditFilmInput(
     EditFilmInput.EditFilmDirectorPlaceholder Director,
     EditFilmInput.EditFilmProducerPlaceholder Producer)
 {
-    public record EditFilmActorPlaceholder(string? Id, string? Name, string? Surname);
+    public sealed record EditFilmActorPlaceholder(string? Id, string? Name, string? Surname);
 
-    public record EditFilmGenrePlaceholder(string? Id, string? Name);
+    public sealed record EditFilmGenrePlaceholder(string? Id, string? Name);
 
-    public record EditFilmDirectorPlaceholder(string? Id, string? Name, string? Surname);
+    public sealed record EditFilmDirectorPlaceholder(string? Id, string? Name, string? Surname);
 
-    public record EditFilmProducerPlaceholder(string? Id, string? Name);
+    public sealed record EditFilmProducerPlaceholder(string? Id, string? Name);
 }

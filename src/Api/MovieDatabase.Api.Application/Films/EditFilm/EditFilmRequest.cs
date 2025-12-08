@@ -1,11 +1,10 @@
 ﻿using MovieDatabase.Api.Core.Cqrs;
-using MovieDatabase.Api.Core.Dtos;
 using MovieDatabase.Api.Core.Dtos.Films;
 using MovieDatabase.Api.Core.Interfaces;
 
 namespace MovieDatabase.Api.Application.Films.EditFilm;
 
-public record EditFilmRequest(
+public sealed record EditFilmRequest(
     string Id,
     string Title,
     DateOnly ReleaseDate,
@@ -15,13 +14,13 @@ public record EditFilmRequest(
     EditFilmRequest.EditFilmDirectorPlaceholder Director,
     EditFilmRequest.EditFilmProducerPlaceholder Producer) : IRequest<FilmDto>, IFrom<EditFilmRequest, EditFilmInput>
 {
-    public record EditFilmActorPlaceholder(string? Id, string? Name, string? Surname);
+    public sealed record EditFilmActorPlaceholder(string? Id, string? Name, string? Surname);
 
-    public record EditFilmGenrePlaceholder(string? Id, string? Name);
+    public sealed record EditFilmGenrePlaceholder(string? Id, string? Name);
 
-    public record EditFilmDirectorPlaceholder(string? Id, string? Name, string? Surname);
+    public sealed record EditFilmDirectorPlaceholder(string? Id, string? Name, string? Surname);
 
-    public record EditFilmProducerPlaceholder(string? Id, string? Name);
+    public sealed record EditFilmProducerPlaceholder(string? Id, string? Name);
 
     public string UserId { get; set; } = string.Empty;
 

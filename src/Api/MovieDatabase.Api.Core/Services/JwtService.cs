@@ -14,10 +14,30 @@ public class JwtService(IOptions<JwtSettings> options) : IJwtService
 {
     private readonly JwtSettings _settings = options.Value;
 
-    public (string? token, DateTime expireDate) GenerateJwtToken(User user)
+    public ClaimsPrincipal ReadPrincipalFromExpiredToken(string token)
+    {
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var key = Encoding.UTF8.GetBytes(_settings.Key);
+
+        var validationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            RequireExpirationTime = true,
+            ValidIssuer = _settings.Issuer,
+            ValidAudience = _settings.Audience,
+            IssuerSigningKey = new SymmetricSecurityKey(key),
+            RoleClaimType = ClaimTypes.Role
+        };
+
+        return tokenHandler.ValidateToken(token, validationParameters, out _);
+    }
+
+    public JwtCredential GenerateJwtToken(User user)
     {
         var now = DateTime.UtcNow;
-        var expires = now.AddMinutes(_settings.ExpirationMinutes);
+        var accessTokenExpires = now.AddMinutes(_settings.AccessTokenExpirationMinutes);
 
         var claims = new List<Claim>
         {
@@ -35,12 +55,27 @@ public class JwtService(IOptions<JwtSettings> options) : IJwtService
             issuer: _settings.Issuer,
             audience: _settings.Audience,
             claims: claims,
-            expires: expires,
+            expires: accessTokenExpires,
             signingCredentials: creds
         );
 
-        var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+        var generatedAccessToken = new JwtSecurityTokenHandler().WriteToken(token);
 
-        return (tokenString, expires);
+        var refreshTokenExpires = now.AddDays(_settings.RefreshTokenExpirationDays);
+
+        var refreshToken = new JwtSecurityToken(
+            issuer: _settings.Issuer,
+            audience: _settings.Audience,
+            claims: claims,
+            expires: refreshTokenExpires,
+            signingCredentials: creds
+        );
+
+        var generatedRefreshToken = new JwtSecurityTokenHandler().WriteToken(refreshToken);
+
+        return new JwtCredential(
+            new JwtCredential.JwtToken(generatedAccessToken, accessTokenExpires),
+            new JwtCredential.JwtToken(generatedRefreshToken, refreshTokenExpires)
+        );
     }
 }

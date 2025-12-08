@@ -1,13 +1,10 @@
 ﻿using MovieDatabase.Api.Core.Cqrs;
-using MovieDatabase.Api.Core.Dtos;
 using MovieDatabase.Api.Core.Dtos.Films;
 using MovieDatabase.Api.Core.Interfaces;
 
 namespace MovieDatabase.Api.Application.Films.CreateFilm;
 
-
-
-public record CreateFilmRequest(
+public sealed record CreateFilmRequest(
     string Title,
     DateOnly ReleaseDate,
     string? Description,
@@ -16,13 +13,13 @@ public record CreateFilmRequest(
     CreateFilmRequest.DirectorPlaceholder Director,
     CreateFilmRequest.ProducerPlaceholder Producer) : IRequest<FilmDto>, IFrom<CreateFilmRequest, CreateFilmInput>
 {
-    public record ActorPlaceholder(string? Id, string Name, string Surname);
+    public sealed record ActorPlaceholder(string? Id, string Name, string Surname);
 
-    public record GenrePlaceholder(string? Id, string Name);
+    public sealed record GenrePlaceholder(string? Id, string Name);
 
-    public record DirectorPlaceholder(string? Id, string Name, string Surname);
+    public sealed record DirectorPlaceholder(string? Id, string Name, string Surname);
 
-    public record ProducerPlaceholder(string? Id, string Name);
+    public sealed record ProducerPlaceholder(string? Id, string Name);
 
     public string CreatorId { get; set; } = string.Empty;
 
