@@ -6,7 +6,7 @@ using Bogus;
 using MovieDatabase.FakeDataGenerator;
 using MovieDatabase.FakeDataGenerator.Extensions;
 
-const string outputPath = "./src/Api/MovieDatabase.Api.Infrastructure/Data";
+const string outputPath = "./src/Api/MovieDatabase.Api/Data";
 
 var moviesFileOption = new Option<FileInfo>("--file")
 {
@@ -75,8 +75,8 @@ var (filmsList, users) = faker.GenerateFilmsWithUsers(movies, filmCount, userCou
 const string filmsFileName = "films.json";
 const string usersFileName = "users.json";
 
-string outPath = Path.Join(outputPath, filmsFileName);
-string usersOutPath = Path.Join(outputPath, usersFileName);
+var outPath = Path.Combine(outputPath, filmsFileName);
+var usersOutPath = Path.Combine(outputPath, usersFileName);
 
 await using var fs = File.Create(outPath);
 await JsonSerializer.SerializeAsync(fs, filmsList);
