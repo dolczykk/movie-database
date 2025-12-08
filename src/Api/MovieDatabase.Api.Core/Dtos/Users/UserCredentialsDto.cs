@@ -12,7 +12,7 @@ public record UserCredentialsDto(
 {
     public string? Token { get; set; }
     public DateTime? ExpireTime { get; set; }
-    
+
     public string? RefreshToken { get; set; }
     public DateTime? RefreshTokenExpireTime { get; set; }
 

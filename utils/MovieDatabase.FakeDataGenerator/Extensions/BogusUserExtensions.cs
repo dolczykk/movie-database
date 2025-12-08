@@ -41,7 +41,7 @@ internal static class BogusUserExtensions
         return users;
     }
 
-    private static User CreateUser(UserRoles role, Faker faker) 
+    private static User CreateUser(UserRoles role, Faker faker)
         => new()
         {
             Id = Guid.NewGuid(),

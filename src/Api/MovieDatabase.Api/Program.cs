@@ -17,10 +17,10 @@ builder.AddCosmosDbContext<AppDbContext>(CosmosConfiguration.ModuleName, databas
             {
                 return;
             }
-            
+
             await DbSeeder.SeedUsers(seed, ct);
             await DbSeeder.SeedFilms(seed, ct);
-            
+
             await seed.SaveChangesAsync(ct);
         });
     });

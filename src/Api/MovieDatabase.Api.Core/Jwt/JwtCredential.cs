@@ -5,7 +5,7 @@ public sealed record JwtCredential(
     JwtCredential.JwtToken RefreshToken
 )
 {
-    public sealed record JwtToken( 
+    public sealed record JwtToken(
         string Token,
         DateTime ExpireDate
     );

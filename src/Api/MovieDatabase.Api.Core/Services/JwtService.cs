@@ -58,11 +58,11 @@ public class JwtService(IOptions<JwtSettings> options) : IJwtService
             expires: accessTokenExpires,
             signingCredentials: creds
         );
-        
+
         var generatedAccessToken = new JwtSecurityTokenHandler().WriteToken(token);
-        
+
         var refreshTokenExpires = now.AddDays(_settings.RefreshTokenExpirationDays);
-        
+
         var refreshToken = new JwtSecurityToken(
             issuer: _settings.Issuer,
             audience: _settings.Audience,

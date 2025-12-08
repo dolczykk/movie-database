@@ -1,4 +1,3 @@
-using Shouldly;
 using MovieDatabase.Api.Application.Users.AuthenticateUser;
 using MovieDatabase.Api.Core.Documents.Users;
 using MovieDatabase.Api.Core.Exceptions.Users;
@@ -7,14 +6,17 @@ using MovieDatabase.Api.Core.Services;
 using MovieDatabase.Api.Core.Utils;
 using MovieDatabase.Api.Infrastructure.Db.Repositories;
 using MovieDatabase.UnitTests.Helpers;
+
 using NSubstitute;
+
+using Shouldly;
 
 namespace MovieDatabase.UnitTests.Application.Users;
 
 public class AuthenticateUserRequestHandlerTests
 {
     private const int ExpireDateToleranceSeconds = 10;
-    
+
     private readonly IUserRepository _mockUserRepository;
     private readonly IJwtService _mockJwtService;
     private readonly AuthenticateUserRequestHandler _handler;
@@ -130,7 +132,7 @@ public class AuthenticateUserRequestHandlerTests
             new JwtCredential.JwtToken("access-token", DateTime.UtcNow.AddHours(1)),
             new JwtCredential.JwtToken("refresh-token", DateTime.UtcNow.AddDays(7))
         );
-        
+
         _mockUserRepository.GetByEmail(request.Email)
             .Returns(Task.FromResult<User?>(user));
         _mockJwtService.GenerateJwtToken(user)
@@ -153,12 +155,12 @@ public class AuthenticateUserRequestHandlerTests
         const string password = "TestPassword123!";
         var passwordHash = PasswordUtils.HashPassword(password);
         var user = TestDataBuilder.CreateValidUser(passwordHash: passwordHash);
-        
+
         var request = new AuthenticateUserRequest(
             Email: user.Email,
             Password: password
         );
-        
+
         var expectedTokenModel = new JwtCredential(
             new JwtCredential.JwtToken("jwt-access-token-abc123", DateTime.UtcNow.AddHours(1)),
             new JwtCredential.JwtToken("jwt-refresh-token-abc123", DateTime.UtcNow.AddDays(7))
@@ -190,7 +192,7 @@ public class AuthenticateUserRequestHandlerTests
             passwordHash: passwordHash,
             role: role
         );
-        
+
         var request = new AuthenticateUserRequest(
             Email: user.Email,
             Password: password
@@ -200,7 +202,7 @@ public class AuthenticateUserRequestHandlerTests
             new JwtCredential.JwtToken("access-token", DateTime.UtcNow.AddHours(1)),
             new JwtCredential.JwtToken("refresh-token", DateTime.UtcNow.AddDays(7))
         );
-        
+
         _mockUserRepository.GetByEmail(request.Email)
             .Returns(Task.FromResult<User?>(user));
         _mockJwtService.GenerateJwtToken(user)
@@ -239,7 +241,7 @@ public class AuthenticateUserRequestHandlerTests
         const string password = "TestPassword123!";
         var passwordHash = PasswordUtils.HashPassword(password);
         var user = TestDataBuilder.CreateValidUser(passwordHash: passwordHash);
-        
+
         var request = new AuthenticateUserRequest(
             Email: user.Email,
             Password: password
@@ -249,7 +251,7 @@ public class AuthenticateUserRequestHandlerTests
             new JwtCredential.JwtToken("access-token", DateTime.UtcNow.AddHours(1)),
             new JwtCredential.JwtToken("refresh-token", DateTime.UtcNow.AddDays(7))
         );
-        
+
         _mockUserRepository.GetByEmail(request.Email)
             .Returns(Task.FromResult<User?>(user));
         _mockJwtService.GenerateJwtToken(user)

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+
 using User = MovieDatabase.Api.Core.Documents.Users.User;
 
 namespace MovieDatabase.Api.Infrastructure.Db.Repositories;
@@ -28,8 +29,7 @@ public sealed class UserRepository(AppDbContext context) : IUserRepository
         => await context.Users
             .Include(u => u.Tokens)
             .Where(u => u.Id == Guid.Parse(userId) && u.Tokens.Any(
-                    t => !t.IsRevoked && t.AccessToken == accessToken && t.RefreshToken == refreshToken && t.ExpiresAt > DateTime.UtcNow 
+                    t => !t.IsRevoked && t.AccessToken == accessToken && t.RefreshToken == refreshToken && t.ExpiresAt > DateTime.UtcNow
             ))
             .SingleOrDefaultAsync();
 }
-

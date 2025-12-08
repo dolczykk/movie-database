@@ -24,7 +24,7 @@ public static class GraphQLHelper
         {
             throw new HttpRequestException(
                 $"Failed to execute GraphQL query. Ensure the API is running and accessible. " +
-                $"Base Address: {client.BaseAddress}. Original error: {ex.Message}", 
+                $"Base Address: {client.BaseAddress}. Original error: {ex.Message}",
                 ex);
         }
     }

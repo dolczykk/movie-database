@@ -3,4 +3,3 @@
     [CollectionDefinition("AspireAppHost")]
     public class AspireAppHostCollection : ICollectionFixture<AspireAppHostFixture>;
 }
-

@@ -30,4 +30,4 @@ var outputPath = Path.Combine(
 
 File.WriteAllText(outputPath, sdl);
 
-Console.WriteLine($"Generated schema at {outputPath}");     
+Console.WriteLine($"Generated schema at {outputPath}");

@@ -31,7 +31,7 @@ public sealed class CreateUserRequestHandler(
         };
 
         var credentials = jwtService.GenerateJwtToken(user);
-        
+
         user.Tokens.Add(new ClaimToken
         {
             AccessToken = HashUtils.ComputeHash(credentials.AccessToken.Token),
@@ -45,12 +45,12 @@ public sealed class CreateUserRequestHandler(
 
         userDto.Token = credentials.AccessToken.Token;
         userDto.ExpireTime = credentials.AccessToken.ExpireDate;
-        
+
         userDto.RefreshToken = credentials.RefreshToken.Token;
         userDto.RefreshTokenExpireTime = credentials.RefreshToken.ExpireDate;
 
         userRepository.Add(user);
-        
+
         return userDto;
     }
 }

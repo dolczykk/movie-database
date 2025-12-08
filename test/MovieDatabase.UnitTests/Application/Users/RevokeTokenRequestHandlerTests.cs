@@ -1,7 +1,6 @@
-﻿using System.Security.Claims;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
-using Shouldly;
 using MovieDatabase.Api.Application.Users.RevokeToken;
 using MovieDatabase.Api.Core.Documents.Users;
 using MovieDatabase.Api.Core.Exceptions.Auth;
@@ -10,14 +9,17 @@ using MovieDatabase.Api.Core.Services;
 using MovieDatabase.Api.Core.Utils;
 using MovieDatabase.Api.Infrastructure.Db.Repositories;
 using MovieDatabase.UnitTests.Helpers;
+
 using NSubstitute;
+
+using Shouldly;
 
 namespace MovieDatabase.UnitTests.Application.Users;
 
 public class RevokeTokenRequestHandlerTests
 {
     private const int ExpireDateToleranceSeconds = 10;
-    
+
     private readonly IUserRepository _mockUserRepository;
     private readonly IJwtService _mockJwtService;
     private readonly RevokeTokenRequestHandler _handler;
@@ -36,7 +38,7 @@ public class RevokeTokenRequestHandlerTests
         var userId = Guid.NewGuid().ToString();
         const string oldAccessToken = "old-access-token";
         const string oldRefreshToken = "old-refresh-token";
-        
+
         var user = TestDataBuilder.CreateValidUser(id: Guid.Parse(userId));
         user.Tokens =
         [
@@ -74,11 +76,11 @@ public class RevokeTokenRequestHandlerTests
         result.AccessToken.ExpiresAt.ShouldBe(newJwtCredentials.AccessToken.ExpireDate, TimeSpan.FromSeconds(ExpireDateToleranceSeconds));
         result.RefreshToken.Value.ShouldBe(newJwtCredentials.RefreshToken.Token);
         result.RefreshToken.ExpiresAt.ShouldBe(newJwtCredentials.RefreshToken.ExpireDate, TimeSpan.FromSeconds(ExpireDateToleranceSeconds));
-        
+
         user.Tokens.First(t => t.AccessToken == HashUtils.ComputeHash(oldAccessToken)).IsRevoked.ShouldBeTrue();
-        
-        user.Tokens.ShouldContain(t => 
-            t.AccessToken == HashUtils.ComputeHash(newJwtCredentials.AccessToken.Token) && 
+
+        user.Tokens.ShouldContain(t =>
+            t.AccessToken == HashUtils.ComputeHash(newJwtCredentials.AccessToken.Token) &&
             t.RefreshToken == HashUtils.ComputeHash(newJwtCredentials.RefreshToken.Token) &&
             !t.IsRevoked);
     }
@@ -101,7 +103,7 @@ public class RevokeTokenRequestHandlerTests
 
         // Assert
         await Should.ThrowAsync<TokenCannotBeRevokedApplicationException>(act);
-        
+
         _mockJwtService.DidNotReceive().GenerateJwtToken(Arg.Any<User>());
     }
 
@@ -115,8 +117,8 @@ public class RevokeTokenRequestHandlerTests
             .Returns(new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()) })));
 
         _mockUserRepository.FindUserToRevokeToken(
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
+            Arg.Any<string>(),
+            Arg.Any<string>(),
             Arg.Any<string>())
             .Returns(Task.FromResult<User?>(null));
 
@@ -134,7 +136,7 @@ public class RevokeTokenRequestHandlerTests
         var userId = Guid.NewGuid().ToString();
         const string accessToken = "test-access-token";
         const string refreshToken = "test-refresh-token";
-        
+
         var user = TestDataBuilder.CreateValidUser();
         user.Tokens =
         [
@@ -205,8 +207,8 @@ public class RevokeTokenRequestHandlerTests
         await _handler.HandleAsync(request);
 
         // Assert
-        _mockJwtService.Received(1).GenerateJwtToken(Arg.Is<User>(u => 
-            u.Id == user.Id && 
+        _mockJwtService.Received(1).GenerateJwtToken(Arg.Is<User>(u =>
+            u.Id == user.Id &&
             u.Email == user.Email));
     }
 
@@ -249,8 +251,8 @@ public class RevokeTokenRequestHandlerTests
 
         // Assert
         user.Tokens.Count.ShouldBe(initialTokenCount + 1);
-        user.Tokens.ShouldContain(t => 
-            t.AccessToken == HashUtils.ComputeHash(newJwtCredentials.AccessToken.Token) && 
+        user.Tokens.ShouldContain(t =>
+            t.AccessToken == HashUtils.ComputeHash(newJwtCredentials.AccessToken.Token) &&
             t.RefreshToken == HashUtils.ComputeHash(newJwtCredentials.RefreshToken.Token) &&
             t.ExpiresAt == newJwtCredentials.RefreshToken.ExpireDate &&
             t.IsRevoked == false);
@@ -263,7 +265,7 @@ public class RevokeTokenRequestHandlerTests
         var userId = Guid.NewGuid().ToString();
         const string oldAccessToken = "old-access-token";
         const string oldRefreshToken = "old-refresh-token";
-        
+
         var user = TestDataBuilder.CreateValidUser(id: Guid.Parse(userId));
         user.Tokens =
         [
@@ -306,7 +308,7 @@ public class RevokeTokenRequestHandlerTests
         var userId = Guid.NewGuid().ToString();
         const string targetAccessToken = "target-access-token";
         const string targetRefreshToken = "target-refresh-token";
-        
+
         var user = TestDataBuilder.CreateValidUser(id: Guid.Parse(userId));
         user.Tokens =
         [
@@ -381,7 +383,7 @@ public class RevokeTokenRequestHandlerTests
 
         var accessTokenExpiry = DateTime.UtcNow.AddHours(1);
         var refreshTokenExpiry = DateTime.UtcNow.AddDays(7);
-        
+
         var newJwtCredentials = new JwtCredential(
             new JwtCredential.JwtToken("new-access-token-value", accessTokenExpiry),
             new JwtCredential.JwtToken("new-refresh-token-value", refreshTokenExpiry)

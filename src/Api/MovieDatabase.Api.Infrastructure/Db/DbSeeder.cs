@@ -12,7 +12,7 @@ namespace MovieDatabase.Api.Infrastructure.Db;
 public static class DbSeeder
 {
     private const string SeedDataPath = "Data";
-    
+
     public static async Task SeedUsers(DbContext context, CancellationToken cancellationToken = default)
     {
         await using var fileStream = File.OpenRead(Path.Combine(SeedDataPath, "users.json"));
@@ -20,7 +20,7 @@ public static class DbSeeder
 
         await context.Set<User>().AddRangeAsync(users);
     }
-    
+
     public static async Task SeedFilms(DbContext context, CancellationToken cancellationToken = default)
     {
         await using var fileStream = File.OpenRead(Path.Combine(SeedDataPath, "films.json"));

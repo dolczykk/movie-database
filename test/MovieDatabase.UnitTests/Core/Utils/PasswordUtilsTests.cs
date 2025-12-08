@@ -1,4 +1,5 @@
 using MovieDatabase.Api.Core.Utils;
+
 using Shouldly;
 
 namespace MovieDatabase.UnitTests.Core.Utils;

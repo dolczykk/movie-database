@@ -30,7 +30,7 @@ internal static class BogusFilmExtensions
                 var template = templates.Count > 0
                     ? templates[fkr.Random.Int(0, templates.Count - 1)]
                     : new Movie();
-                
+
                 return GenerateFilmFromTemplateCore(fkr, template);
             });
     }
@@ -82,9 +82,9 @@ internal static class BogusFilmExtensions
             .Select(name => new Genre { Id = Guid.NewGuid(), Name = name, CreatedAt = createdAt })
             .ToList();
 
-         var title = string.IsNullOrWhiteSpace(template.Title)
-            ? GenerateRandomTitle(faker)
-            : template.Title!.Trim();
+        var title = string.IsNullOrWhiteSpace(template.Title)
+           ? GenerateRandomTitle(faker)
+           : template.Title!.Trim();
 
         var description = string.IsNullOrWhiteSpace(template.Description)
             ? faker.Lorem.Paragraph()
@@ -134,7 +134,7 @@ internal static class BogusFilmExtensions
     private static List<Actor> GenerateRandomActors(Faker faker, DateTime createdAt)
     {
         var count = faker.Random.Int(2, 5);
-        
+
         return Enumerable.Range(0, count)
             .Select(_ => new Actor
             {
@@ -154,7 +154,7 @@ internal static class BogusFilmExtensions
         }
 
         var parts = full.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        
+
         return parts.Length > 0 ? parts[0] : full;
     }
 
@@ -166,7 +166,7 @@ internal static class BogusFilmExtensions
         }
 
         var parts = full.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        
+
         return parts.Length > 1 ? string.Join(' ', parts.Skip(1)) : string.Empty;
     }
 }

@@ -1,4 +1,3 @@
-using Shouldly;
 using MovieDatabase.Api.Application.Users.CreateUser;
 using MovieDatabase.Api.Core.Documents.Users;
 using MovieDatabase.Api.Core.Exceptions.Users;
@@ -6,14 +5,17 @@ using MovieDatabase.Api.Core.Jwt;
 using MovieDatabase.Api.Core.Services;
 using MovieDatabase.Api.Infrastructure.Db.Repositories;
 using MovieDatabase.UnitTests.Helpers;
+
 using NSubstitute;
+
+using Shouldly;
 
 namespace MovieDatabase.UnitTests.Application.Users;
 
 public class CreateUserRequestHandlerTests
 {
     private const int ExpireDateToleranceSeconds = 10;
-    
+
     private readonly IUserRepository _mockUserRepository;
     private readonly IJwtService _mockJwtService;
     private readonly CreateUserRequestHandler _handler;
@@ -30,12 +32,12 @@ public class CreateUserRequestHandlerTests
     {
         // Arrange
         var request = TestDataBuilder.CreateValidCreateUserRequest();
-        
+
         var expectedJwtCredentials = new JwtCredential(
             new JwtCredential.JwtToken("test-access-token", DateTime.UtcNow.AddHours(1)),
             new JwtCredential.JwtToken("test-refresh-token", DateTime.UtcNow.AddDays(7))
         );
-        
+
         _mockUserRepository.GetByEmail(Arg.Any<string>())
             .Returns(Task.FromResult<User?>(null));
         _mockJwtService.GenerateJwtToken(Arg.Any<User>())
@@ -46,8 +48,8 @@ public class CreateUserRequestHandlerTests
 
         // Assert
         result.ShouldNotBeNull();
-        _mockUserRepository.Received(1).Add(Arg.Is<User>(u => 
-            u.Name == request.Username && 
+        _mockUserRepository.Received(1).Add(Arg.Is<User>(u =>
+            u.Name == request.Username &&
             u.Email == request.Email));
     }
 
@@ -56,12 +58,12 @@ public class CreateUserRequestHandlerTests
     {
         // Arrange
         var request = TestDataBuilder.CreateValidCreateUserRequest();
-        
+
         var expectedJwtModel = new JwtCredential(
             new JwtCredential.JwtToken("jwt-access-token-12345", DateTime.UtcNow.AddHours(1)),
             new JwtCredential.JwtToken("jwt-refresh-token-12345", DateTime.UtcNow.AddDays(7))
         );
-        
+
         _mockUserRepository.GetByEmail(Arg.Any<string>())
             .Returns(Task.FromResult<User?>(null));
         _mockJwtService.GenerateJwtToken(Arg.Any<User>())
@@ -109,7 +111,7 @@ public class CreateUserRequestHandlerTests
             new JwtCredential.JwtToken("access-token", DateTime.UtcNow.AddHours(1)),
             new JwtCredential.JwtToken("refresh-token", DateTime.UtcNow.AddDays(7))
         );
-        
+
         _mockUserRepository.GetByEmail(Arg.Any<string>())
             .Returns(Task.FromResult<User?>(null));
         _mockJwtService.GenerateJwtToken(Arg.Any<User>())
@@ -129,7 +131,7 @@ public class CreateUserRequestHandlerTests
     {
         // Arrange
         var request = TestDataBuilder.CreateValidCreateUserRequest();
-        
+
         var expectedJwtCredentials = new JwtCredential(
             new JwtCredential.JwtToken("access-token", DateTime.UtcNow.AddHours(1)),
             new JwtCredential.JwtToken("refresh-token", DateTime.UtcNow.AddDays(7))
@@ -145,7 +147,7 @@ public class CreateUserRequestHandlerTests
 
         // Assert
         result.Role.ShouldBe(nameof(UserRoles.User));
-        _mockUserRepository.Received(1).Add(Arg.Is<User>(u => 
+        _mockUserRepository.Received(1).Add(Arg.Is<User>(u =>
             u.Role == UserRoles.User));
     }
 
@@ -154,7 +156,7 @@ public class CreateUserRequestHandlerTests
     {
         // Arrange
         var request = TestDataBuilder.CreateValidCreateUserRequest();
-        
+
         var expectedJwtCredentials = new JwtCredential(
             new JwtCredential.JwtToken("access-token", DateTime.UtcNow.AddHours(1)),
             new JwtCredential.JwtToken("refresh-token", DateTime.UtcNow.AddDays(7))
@@ -178,7 +180,7 @@ public class CreateUserRequestHandlerTests
     {
         // Arrange
         var request = TestDataBuilder.CreateValidCreateUserRequest();
-        
+
         var expectedJwtCredentials = new JwtCredential(
             new JwtCredential.JwtToken("access-token", DateTime.UtcNow.AddHours(1)),
             new JwtCredential.JwtToken("refresh-token", DateTime.UtcNow.AddDays(7))
@@ -212,7 +214,7 @@ public class CreateUserRequestHandlerTests
             new JwtCredential.JwtToken("access-token", DateTime.UtcNow.AddHours(1)),
             new JwtCredential.JwtToken("refresh-token", DateTime.UtcNow.AddDays(7))
         );
-        
+
         _mockUserRepository.GetByEmail(Arg.Any<string>())
             .Returns(Task.FromResult<User?>(null));
         _mockJwtService.GenerateJwtToken(Arg.Any<User>())

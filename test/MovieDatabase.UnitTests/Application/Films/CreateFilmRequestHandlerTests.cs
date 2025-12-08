@@ -1,11 +1,13 @@
-using Shouldly;
 using MovieDatabase.Api.Application.Films.CreateFilm;
 using MovieDatabase.Api.Core.Documents.Films;
 using MovieDatabase.Api.Core.Exceptions.Films;
 using MovieDatabase.Api.Infrastructure.Db;
 using MovieDatabase.Api.Infrastructure.Db.Repositories;
 using MovieDatabase.UnitTests.Helpers;
+
 using NSubstitute;
+
+using Shouldly;
 
 namespace MovieDatabase.UnitTests.Application.Films;
 
@@ -96,7 +98,8 @@ public class CreateFilmRequestHandlerTests
             Genres: new[] { new CreateFilmRequest.GenrePlaceholder(null, "Drama") },
             Director: new CreateFilmRequest.DirectorPlaceholder(null, "Jane", "Smith"),
             Producer: new CreateFilmRequest.ProducerPlaceholder(null, "Test Studios")
-        ) { CreatorId = Guid.NewGuid().ToString() };
+        )
+        { CreatorId = Guid.NewGuid().ToString() };
 
         _mockFilmRepository.GetByTitle(Arg.Any<string>())
             .Returns(Task.FromResult<Film?>(null));
@@ -164,7 +167,8 @@ public class CreateFilmRequestHandlerTests
             Genres: new[] { new CreateFilmRequest.GenrePlaceholder(null, "Drama") },
             Director: new CreateFilmRequest.DirectorPlaceholder(null, "Director", "Name"),
             Producer: new CreateFilmRequest.ProducerPlaceholder(null, "Producer")
-        ) { CreatorId = Guid.NewGuid().ToString() };
+        )
+        { CreatorId = Guid.NewGuid().ToString() };
 
         _mockFilmRepository.GetByTitle(Arg.Any<string>())
             .Returns(Task.FromResult<Film?>(null));
@@ -198,7 +202,8 @@ public class CreateFilmRequestHandlerTests
             ],
             Director: new CreateFilmRequest.DirectorPlaceholder(null, "Director", "Name"),
             Producer: new CreateFilmRequest.ProducerPlaceholder(null, "Producer")
-        ) { CreatorId = Guid.NewGuid().ToString() };
+        )
+        { CreatorId = Guid.NewGuid().ToString() };
 
         _mockFilmRepository.GetByTitle(Arg.Any<string>())
             .Returns(Task.FromResult<Film?>(null));

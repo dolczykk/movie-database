@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+
 using MovieDatabase.Api.Core.Documents.Films;
 using MovieDatabase.Api.Core.Documents.Users;
 
@@ -18,27 +19,27 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             entity.ToContainer("Film");
             entity.HasPartitionKey(f => f.Title);
             entity.HasKey(f => f.Id);
-            
+
             entity.OwnsOne(f => f.Director, director =>
             {
                 director.HasKey(d => d.Id);
             });
-            
+
             entity.OwnsOne(f => f.Producer, producer =>
             {
                 producer.HasKey(p => p.Id);
             });
-            
+
             entity.OwnsMany(f => f.Actors, actor =>
             {
                 actor.HasKey(a => a.Id);
             });
-            
+
             entity.OwnsMany(f => f.Genres, genre =>
             {
                 genre.HasKey(g => g.Id);
             });
-            
+
             entity.Property(f => f.Id).ToJsonProperty("id");
             entity.Property(f => f.Title).IsRequired();
             entity.Property(f => f.ReleaseDate).HasConversion(
@@ -53,11 +54,11 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             entity.ToContainer("User");
             entity.HasPartitionKey(u => u.Email);
             entity.HasKey(u => u.Id);
-            
+
             entity.Property(u => u.Id).ToJsonProperty("id");
             entity.Property(u => u.Email).IsRequired();
             entity.Property(u => u.PasswordHash).IsRequired();
-            
+
             entity.HasQueryFilter(f => !f.IsDeleted);
         });
     }

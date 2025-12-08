@@ -22,15 +22,14 @@ public sealed class FilmRepository(AppDbContext context) : IFilmRepository
     public void Delete(Film film)
     {
         film.IsDeleted = true;
-    
+
         context.Films.Update(film);
     }
 
     public void Update(Film film)
     {
         film.UpdatedAt = DateTime.UtcNow;
-        
+
         context.Films.Update(film);
     }
 }
-

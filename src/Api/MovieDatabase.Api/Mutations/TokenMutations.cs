@@ -16,7 +16,7 @@ public class TokenMutations
         var result = await dispatcher.Dispatch(input);
 
         await unitOfWork.Commit();
-        
+
         return result;
     }
 }

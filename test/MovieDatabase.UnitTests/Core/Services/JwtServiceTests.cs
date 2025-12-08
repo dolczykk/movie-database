@@ -1,9 +1,12 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+
 using Microsoft.Extensions.Options;
+
 using MovieDatabase.Api.Core.Documents.Users;
 using MovieDatabase.Api.Core.Jwt;
 using MovieDatabase.Api.Core.Services;
+
 using Shouldly;
 
 namespace MovieDatabase.UnitTests.Core.Services;
@@ -46,11 +49,11 @@ public class JwtServiceTests
         credentials.AccessToken.ShouldNotBeNull();
         credentials.AccessToken.Token.ShouldNotBeEmpty();
         credentials.AccessToken.ExpireDate.ShouldBeGreaterThan(DateTime.UtcNow);
-        
+
         credentials.RefreshToken.ShouldNotBeNull();
         credentials.RefreshToken.Token.ShouldNotBeEmpty();
         credentials.RefreshToken.ExpireDate.ShouldBeGreaterThan(DateTime.UtcNow);
-        
+
         credentials.AccessToken.Token.ShouldNotBe(credentials.RefreshToken.Token);
         credentials.AccessToken.ExpireDate.ShouldNotBeSameAs(credentials.RefreshToken.ExpireDate);
     }
@@ -75,13 +78,13 @@ public class JwtServiceTests
         var handler = new JwtSecurityTokenHandler();
         var jwtAccessToken = handler.ReadJwtToken(token.AccessToken.Token);
         var jwtRefreshToken = handler.ReadJwtToken(token.RefreshToken.Token);
-        
+
         jwtAccessToken.Claims.ShouldContain(c => c.Type == JwtRegisteredClaimNames.Jti && c.Value == userId.ToString());
         jwtAccessToken.Claims.ShouldContain(c => c.Type == JwtRegisteredClaimNames.Sub && c.Value == "TestUser");
         jwtAccessToken.Claims.ShouldContain(c => c.Type == JwtRegisteredClaimNames.Email && c.Value == "test@example.com");
         jwtAccessToken.Claims.ShouldContain(c => c.Type == JwtExtendedClaimTypes.Kid);
         jwtAccessToken.Claims.ShouldContain(c => c.Type == ClaimTypes.Role && c.Value == "User");
-            
+
         jwtRefreshToken.Claims.ShouldContain(c => c.Type == JwtRegisteredClaimNames.Jti && c.Value == userId.ToString());
         jwtRefreshToken.Claims.ShouldContain(c => c.Type == JwtRegisteredClaimNames.Sub && c.Value == "TestUser");
         jwtRefreshToken.Claims.ShouldContain(c => c.Type == JwtRegisteredClaimNames.Email && c.Value == "test@example.com");
@@ -108,7 +111,7 @@ public class JwtServiceTests
         // Assert
         var afterGeneration = DateTime.UtcNow;
         var expectedExpiration = beforeGeneration.AddMinutes(_jwtSettings.AccessTokenExpirationMinutes);
-        
+
         credential.AccessToken.ExpireDate.ShouldBe(expectedExpiration, TimeSpan.FromSeconds(5));
         credential.AccessToken.ExpireDate.ShouldBeGreaterThan(afterGeneration);
     }
@@ -132,11 +135,11 @@ public class JwtServiceTests
         // Assert
         var afterGeneration = DateTime.UtcNow;
         var expectedExpiration = beforeGeneration.AddDays(_jwtSettings.RefreshTokenExpirationDays);
-        
+
         credential.RefreshToken.ExpireDate.ShouldBe(expectedExpiration, TimeSpan.FromSeconds(5));
         credential.RefreshToken.ExpireDate.ShouldBeGreaterThan(afterGeneration);
     }
-    
+
     [Fact]
     public void GenerateJwtToken_AccessTokenShouldBeDecodable()
     {
@@ -154,21 +157,21 @@ public class JwtServiceTests
 
         // Assert
         var handler = new JwtSecurityTokenHandler();
-        
+
         var canReadAccessToken = handler.CanReadToken(credentials.AccessToken.Token);
         canReadAccessToken.ShouldBeTrue();
 
         var accessJwtToken = handler.ReadJwtToken(credentials.AccessToken.Token);
-        
+
         accessJwtToken.ShouldNotBeNull();
         accessJwtToken.Issuer.ShouldBe(_jwtSettings.Issuer);
         accessJwtToken.Audiences.ShouldContain(_jwtSettings.Audience);
-        
+
         var canReadRefreshToken = handler.CanReadToken(credentials.RefreshToken.Token);
         canReadRefreshToken.ShouldBeTrue();
 
         var refreshJwtToken = handler.ReadJwtToken(credentials.RefreshToken.Token);
-        
+
         refreshJwtToken.ShouldNotBeNull();
         refreshJwtToken.Issuer.ShouldBe(_jwtSettings.Issuer);
         refreshJwtToken.Audiences.ShouldContain(_jwtSettings.Audience);
@@ -258,7 +261,7 @@ public class JwtServiceTests
 
         jwtToken1.Subject.ShouldBe("User1");
         jwtToken2.Subject.ShouldBe("User2");
-        
+
         jwtAccessToken1.Subject.ShouldBe("User1");
         jwtAccessToken2.Subject.ShouldBe("User2");
     }

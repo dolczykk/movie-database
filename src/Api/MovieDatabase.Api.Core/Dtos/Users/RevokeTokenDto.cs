@@ -9,10 +9,10 @@ public record RevokeTokenDto(
 ) : IFrom<RevokeTokenDto, JwtCredential>
 {
     public static RevokeTokenDto From(JwtCredential from)
-        => new (
+        => new(
             new RevokeTokenDto_JwtToken(from.AccessToken.Token, from.AccessToken.ExpireDate),
             new RevokeTokenDto_JwtToken(from.RefreshToken.Token, from.RefreshToken.ExpireDate)
         );
-    
+
     public sealed record RevokeTokenDto_JwtToken(string Value, DateTime ExpiresAt);
 }

@@ -17,7 +17,7 @@ public class UserMutations
         var result = await dispatcher.Dispatch(request);
 
         await unitOfWork.Commit();
-        
+
         return result;
     }
 
@@ -25,7 +25,7 @@ public class UserMutations
     public async Task<UserCredentialsDto> RegisterUser(CreateUserRequest request, [Service] IUnitOfWork unitOfWork, [Service] IDispatcher dispatcher)
     {
         var result = await dispatcher.Dispatch(request);
-        
+
         await unitOfWork.Commit();
 
         return result;

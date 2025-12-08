@@ -34,7 +34,7 @@ public sealed class RevokeTokenRequestHandler(
         {
             throw new TokenCannotBeRevokedApplicationException();
         }
-        
+
         var credentials = jwtService.GenerateJwtToken(user);
 
         using var sha = SHA512.Create();
@@ -49,7 +49,7 @@ public sealed class RevokeTokenRequestHandler(
         });
 
         userRepository.Update(user);
-        
+
         return RevokeTokenDto.From(credentials);
     }
 }
