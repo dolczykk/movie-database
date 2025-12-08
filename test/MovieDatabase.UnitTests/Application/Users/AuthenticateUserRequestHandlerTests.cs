@@ -77,7 +77,7 @@ public class AuthenticateUserRequestHandlerTests
             .Returns(Task.FromResult<User?>(null));
 
         // Act
-        Func<Task> act = () => _handler.HandleAsync(request);
+        var act = () => _handler.HandleAsync(request);
 
         // Assert
         await Should.ThrowAsync<InvalidUserCredentialsApplicationException>(act);
@@ -107,10 +107,10 @@ public class AuthenticateUserRequestHandlerTests
             .Returns(Task.FromResult<User?>(user));
 
         // Act
-        Func<Task> act2 = () => _handler.HandleAsync(request);
+        var act = async () => await _handler.HandleAsync(request);
 
         // Assert
-        await Should.ThrowAsync<InvalidUserCredentialsApplicationException>(act2);
+        await Should.ThrowAsync<InvalidUserCredentialsApplicationException>(act);
 
         _mockJwtService.DidNotReceive().GenerateJwtToken(Arg.Any<User>());
     }

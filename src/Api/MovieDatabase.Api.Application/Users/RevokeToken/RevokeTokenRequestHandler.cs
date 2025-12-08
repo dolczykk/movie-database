@@ -37,8 +37,6 @@ public sealed class RevokeTokenRequestHandler(
 
         var credentials = jwtService.GenerateJwtToken(user);
 
-        using var sha = SHA512.Create();
-
         user.Tokens.Find(x => x.AccessToken == hashedRequestAccessToken && x.RefreshToken == hashedRequestRefreshToken)!.IsRevoked = true;
         user.Tokens.Add(new ClaimToken
         {

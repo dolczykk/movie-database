@@ -255,7 +255,7 @@ public class RevokeTokenRequestHandlerTests
             t.AccessToken == HashUtils.ComputeHash(newJwtCredentials.AccessToken.Token) &&
             t.RefreshToken == HashUtils.ComputeHash(newJwtCredentials.RefreshToken.Token) &&
             t.ExpiresAt == newJwtCredentials.RefreshToken.ExpireDate &&
-            t.IsRevoked == false);
+            !t.IsRevoked);
     }
 
     [Fact]

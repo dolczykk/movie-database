@@ -91,7 +91,6 @@ public class UserMutationTests(AspireAppHostFixture fixture)
         // Act
         var registerMutation = GraphQLHelper.LoadQueryFromFile("Graphql/Mutations/RegisterUser.graphql");
 
-        // Act
         await GraphQLHelper.ExecuteMutationAsync<RegisterUserResponse>(
             _httpClient, registerMutation, new { request = registerRequest });
 
