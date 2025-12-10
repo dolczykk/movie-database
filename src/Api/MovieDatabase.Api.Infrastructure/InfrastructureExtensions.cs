@@ -26,6 +26,7 @@ public static class InfrastructureExtensions
     {
         services.AddScoped<IFilmRepository, FilmRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IBlobRepository, BlobRepository>();
 
         return services;
     }

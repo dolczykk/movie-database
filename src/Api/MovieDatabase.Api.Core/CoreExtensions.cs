@@ -15,6 +15,7 @@ public static class CoreExtensions
     {
         services.Configure<JwtSettings>(options => configuration.GetSection("Jwt").Bind(options));
         services.AddScoped<IJwtService, JwtService>();
+        services.AddScoped<IBlobService, BlobService>();
 
         return services;
     }

@@ -25,6 +25,8 @@ builder.AddCosmosDbContext<AppDbContext>(CosmosConfiguration.ModuleName, databas
         });
     });
 
+builder.AddAzureBlobClient(BlobStorageConfiguration.ContainerName);
+
 builder.Services.AddApplicationDefaults();
 builder.Services.AddInfrastructureDefaults(builder.Configuration);
 builder.Services.AddCoreDefaults(builder.Configuration);
@@ -45,6 +47,7 @@ builder.Services
     .AddTypeExtension<FilmMutations>()
     .AddTypeExtension<UserMutations>()
     .AddTypeExtension<TokenMutations>()
+    .AddTypeExtension<BlobMutations>()
     .AddQueryType<Query>();
 
 

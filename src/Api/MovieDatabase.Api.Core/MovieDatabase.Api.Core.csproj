@@ -11,8 +11,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.25.0" />
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageReference Include="HotChocolate.AspNetCore.Authorization" Version="15.1.11" />
+    <PackageReference Include="HotChocolate.Types" Version="15.1.11" />
+    <PackageReference Include="HotChocolate.Types.Scalars.Upload" Version="15.1.11" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.10" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.10" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.10" />

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
+using MovieDatabase.Api.Core.Documents.Blobs;
 using MovieDatabase.Api.Core.Documents.Films;
 using MovieDatabase.Api.Core.Documents.Users;
 
@@ -9,6 +10,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 {
     public DbSet<Film> Films { get; set; } = null!;
     public DbSet<User> Users { get; set; } = null!;
+    public DbSet<Blob> Blobs { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -16,7 +18,6 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
         modelBuilder.Entity<Film>(entity =>
         {
-            entity.ToContainer("Film");
             entity.HasPartitionKey(f => f.Title);
             entity.HasKey(f => f.Id);
 
@@ -51,7 +52,6 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.ToContainer("User");
             entity.HasPartitionKey(u => u.Email);
             entity.HasKey(u => u.Id);
 
@@ -60,6 +60,16 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             entity.Property(u => u.PasswordHash).IsRequired();
 
             entity.HasQueryFilter(f => !f.IsDeleted);
+        });
+
+        modelBuilder.Entity<Blob>(entity =>
+        {
+            entity.HasKey(b => b.Id);
+
+            entity.Property(b => b.Name).IsRequired();
+            entity.Property(b => b.Path).IsRequired();
+
+            entity.HasQueryFilter(b => !b.IsDeleted);
         });
     }
 }
