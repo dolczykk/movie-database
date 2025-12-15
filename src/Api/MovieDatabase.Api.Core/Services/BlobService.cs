@@ -7,6 +7,8 @@ namespace MovieDatabase.Api.Core.Services;
 
 internal class BlobService(BlobServiceClient blobClient) : IBlobService
 {
+
+    
     public async Task<Blob> UploadBlob(string containerName, string fileName, Stream stream, CancellationToken cancellationToken = default)
     {
         var container = blobClient.GetBlobContainerClient(containerName);

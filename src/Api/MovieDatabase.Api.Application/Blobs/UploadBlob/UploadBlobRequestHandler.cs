@@ -1,5 +1,7 @@
-﻿using MovieDatabase.Api.Core.Cqrs;
+﻿using MovieDatabase.Api.Core;
+using MovieDatabase.Api.Core.Cqrs;
 using MovieDatabase.Api.Core.Dtos.Blobs;
+using MovieDatabase.Api.Core.Exceptions.Blobs;
 using MovieDatabase.Api.Core.Services;
 using MovieDatabase.Api.Infrastructure.Db.Repositories;
 
@@ -12,6 +14,11 @@ public class UploadBlobRequestHandler(
 {
     public async Task<BlobDto> HandleAsync(UploadBlobRequest request)
     {
+        if (!Constants.Blobs.AllowedContentTypes.Contains(request.File.ContentType))
+        {
+            throw new NotSupportedContentTypeApplicationException();
+        }
+        
         var blob = await blobService.UploadBlob("files", request.File.Name, request.File.OpenReadStream());
 
         await blobRepository.Add(blob);

@@ -18,6 +18,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
         modelBuilder.Entity<Film>(entity =>
         {
+            entity.ToContainer("Films");
+
             entity.HasPartitionKey(f => f.Title);
             entity.HasKey(f => f.Id);
 
@@ -52,6 +54,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
         modelBuilder.Entity<User>(entity =>
         {
+            entity.ToContainer("Users");
+
             entity.HasPartitionKey(u => u.Email);
             entity.HasKey(u => u.Id);
 
@@ -64,6 +68,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
         modelBuilder.Entity<Blob>(entity =>
         {
+            entity.ToContainer("Blobs");
+            entity.HasPartitionKey(b => b.Id);
+            
             entity.HasKey(b => b.Id);
 
             entity.Property(b => b.Name).IsRequired();

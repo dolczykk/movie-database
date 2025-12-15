@@ -34,6 +34,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services
     .AddGraphQLServer()
     .AddAuthorization()
+    .AddType<UploadType>()
     .RegisterDbContextFactory<AppDbContext>()
     .AddMutationType(d => d.Name("Mutation"))
     .AddFiltering()
