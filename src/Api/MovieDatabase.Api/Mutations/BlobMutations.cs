@@ -14,7 +14,7 @@ namespace MovieDatabase.Api.Mutations;
 public class BlobMutations
 {
     [Authorize]
-    public async Task<BlobDto> UploadFile(ClaimsPrincipal claimsPrincipal, IFile file, [Service] IDispatcher dispatcher, [Service] IUnitOfWork unitOfWork)
+    public async Task<BlobDto> UploadBlob(ClaimsPrincipal claimsPrincipal, IFile file, [Service] IDispatcher dispatcher, [Service] IUnitOfWork unitOfWork)
     {
         var userId = claimsPrincipal.FindFirst(JwtRegisteredClaimNames.Jti);
         var request = new UploadBlobRequest(file, userId!.Value);
