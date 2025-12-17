@@ -6,8 +6,9 @@ namespace MovieDatabase.Api.Core.Dtos.Blobs;
 public record BlobDto(
     string Id,
     string FileName,
-    string Url) : IFrom<BlobDto, Blob>
+    string Url,
+    string Hash) : IFrom<BlobDto, Blob>
 {
-    public static BlobDto From(Blob from)
-        => new BlobDto(from.Id.ToString(), from.Name, from.Path);
+    public static BlobDto From(Blob from) 
+        => new(from.Id.ToString(), from.Name, from.Path, from.Hash);
 }

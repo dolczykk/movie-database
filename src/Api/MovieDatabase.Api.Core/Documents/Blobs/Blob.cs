@@ -10,4 +10,5 @@ public class Blob : BaseDocument
     public string Name { get; set; } = null!;
     public string Path { get; set; } = null!;
     public string UserId { get; set; } = null!;
+    public string Hash { get; set; } = null!;
 }

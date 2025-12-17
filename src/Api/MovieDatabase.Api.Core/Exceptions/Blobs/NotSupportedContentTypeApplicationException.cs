@@ -2,4 +2,4 @@
 
 public class NotSupportedContentTypeApplicationException(
     string message = "The provided content type is not supported"
-) : ApplicationException(message);
+) : BaseApplicationException(message);

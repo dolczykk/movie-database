@@ -227,6 +227,5 @@ public class FilmMutationTests(AspireAppHostFixture fixture)
 
         var error = loginResponse?.Errors?.FirstOrDefault();
         throw new Exception($"Could not get admin token. Error: {error?.Message ?? "Unknown error"}. Check if seeded admin exists with email 'Favian74@example.net' and password 'example123!'");
-
     }
 }

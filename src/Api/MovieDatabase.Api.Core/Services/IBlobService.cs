@@ -6,4 +6,6 @@ public interface IBlobService
 {
     Task<Blob> UploadBlob(string containerName, string fileName, Stream stream,
         CancellationToken cancellationToken = default);
+
+    string GetBlobBaseUri();
 }

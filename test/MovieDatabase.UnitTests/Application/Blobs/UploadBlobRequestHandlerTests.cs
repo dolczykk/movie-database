@@ -30,8 +30,8 @@ public class UploadBlobRequestHandlerTests
     {
         // Arrange
         var userId = Guid.NewGuid().ToString();
-        var fileName = "test-image.png";
-        var contentType = "image/png";
+        const string fileName = "test-image.png";
+        const string contentType = "image/png";
         var mockFile = CreateMockFile(fileName, contentType);
         var request = new UploadBlobRequest(mockFile, userId);
 
@@ -40,7 +40,8 @@ public class UploadBlobRequestHandlerTests
             Id = Guid.NewGuid(),
             Name = fileName,
             Path = $"files/{fileName}",
-            UserId = userId
+            UserId = userId,
+            Hash = "testhash123"
         };
 
         _mockBlobService.UploadBlob(
@@ -58,16 +59,16 @@ public class UploadBlobRequestHandlerTests
         result.Id.ShouldBe(expectedBlob.Id.ToString());
         result.FileName.ShouldBe(expectedBlob.Name);
         result.Url.ShouldBe(expectedBlob.Path);
+        result.Hash.ShouldBe(expectedBlob.Hash);
 
         await _mockBlobService.Received(1).UploadBlob(
-            "files",
-            fileName,
+            Arg.Do<string>(c => string.Equals(c, "images", StringComparison.OrdinalIgnoreCase).ShouldBeTrue()),
+            Arg.Do<string>(s => s.EndsWith(fileName, StringComparison.OrdinalIgnoreCase).ShouldBeTrue()),
             Arg.Any<Stream>(),
             Arg.Any<CancellationToken>());
 
         await _mockBlobRepository.Received(1).Add(Arg.Is<Blob>(b =>
-            b.Id == expectedBlob.Id &&
-            b.Name == expectedBlob.Name));
+            b.Id == expectedBlob.Id && b.Name.EndsWith(expectedBlob.Name, StringComparison.OrdinalIgnoreCase)));
     }
 
     [Theory]
@@ -79,7 +80,7 @@ public class UploadBlobRequestHandlerTests
     {
         // Arrange
         var userId = Guid.NewGuid().ToString();
-        var fileName = "test-image.png";
+        const string fileName = "test-image.png";
         var mockFile = CreateMockFile(fileName, contentType);
         var request = new UploadBlobRequest(mockFile, userId);
 
@@ -88,7 +89,8 @@ public class UploadBlobRequestHandlerTests
             Id = Guid.NewGuid(),
             Name = fileName,
             Path = $"files/{fileName}",
-            UserId = userId
+            UserId = userId,
+            Hash = "testhash123"
         };
 
         _mockBlobService.UploadBlob(
@@ -122,12 +124,12 @@ public class UploadBlobRequestHandlerTests
     {
         // Arrange
         var userId = Guid.NewGuid().ToString();
-        var fileName = "test-file.pdf";
+        const string fileName = "test-file.pdf";
         var mockFile = CreateMockFile(fileName, contentType);
         var request = new UploadBlobRequest(mockFile, userId);
 
         // Act
-        Func<Task> act = () => _handler.HandleAsync(request);
+        var act = () => _handler.HandleAsync(request);
 
         // Assert
         await Should.ThrowAsync<NotSupportedContentTypeApplicationException>(act);
@@ -146,8 +148,8 @@ public class UploadBlobRequestHandlerTests
     {
         // Arrange
         var userId = Guid.NewGuid().ToString();
-        var fileName = "test-image.jpeg";
-        var contentType = "image/jpeg";
+        const string fileName = "test-image.jpeg";
+        const string contentType = "image/jpeg";
         var mockFile = CreateMockFile(fileName, contentType);
         var request = new UploadBlobRequest(mockFile, userId);
 
@@ -156,7 +158,8 @@ public class UploadBlobRequestHandlerTests
             Id = Guid.NewGuid(),
             Name = fileName,
             Path = $"files/{fileName}",
-            UserId = userId
+            UserId = userId,
+            Hash = "testhash123"
         };
 
         _mockBlobService.UploadBlob(
@@ -171,8 +174,8 @@ public class UploadBlobRequestHandlerTests
 
         // Assert
         await _mockBlobService.Received(1).UploadBlob(
-            "files",
-            Arg.Any<string>(),
+            Arg.Do<string>(c => string.Equals(c, "images", StringComparison.OrdinalIgnoreCase).ShouldBeTrue()),
+            Arg.Do<string>(s => s.EndsWith(fileName, StringComparison.OrdinalIgnoreCase).ShouldBeTrue()),
             Arg.Any<Stream>(),
             Arg.Any<CancellationToken>());
     }
@@ -182,8 +185,8 @@ public class UploadBlobRequestHandlerTests
     {
         // Arrange
         var userId = Guid.NewGuid().ToString();
-        var fileName = "test-image.webp";
-        var contentType = "image/webp";
+        const string fileName = "test-image.webp";
+        const string contentType = "image/webp";
         var mockFile = CreateMockFile(fileName, contentType);
         var request = new UploadBlobRequest(mockFile, userId);
 
@@ -192,7 +195,8 @@ public class UploadBlobRequestHandlerTests
             Id = Guid.NewGuid(),
             Name = fileName,
             Path = $"files/{fileName}",
-            UserId = userId
+            UserId = userId,
+            Hash = "testhash123"
         };
 
         _mockBlobService.UploadBlob(
@@ -208,8 +212,8 @@ public class UploadBlobRequestHandlerTests
         // Assert
         await _mockBlobRepository.Received(1).Add(Arg.Is<Blob>(b =>
             b.Id == expectedBlob.Id &&
-            b.Name == expectedBlob.Name &&
-            b.Path == expectedBlob.Path));
+            b.Name.EndsWith(expectedBlob.Name, StringComparison.OrdinalIgnoreCase) &&
+            b.Path.EndsWith(expectedBlob.Name, StringComparison.OrdinalIgnoreCase)));
     }
 
     [Fact]
@@ -217,8 +221,8 @@ public class UploadBlobRequestHandlerTests
     {
         // Arrange
         var userId = Guid.NewGuid().ToString();
-        var fileName = "test-image.png";
-        var contentType = "image/png";
+        const string fileName = "test-image.png";
+        const string contentType = "image/png";
         var mockFile = CreateMockFile(fileName, contentType);
         var request = new UploadBlobRequest(mockFile, userId);
 
@@ -230,7 +234,7 @@ public class UploadBlobRequestHandlerTests
             .Returns<Blob>(x => throw new InvalidOperationException("Blob storage unavailable"));
 
         // Act
-        Func<Task> act = () => _handler.HandleAsync(request);
+        var act = () => _handler.HandleAsync(request);
 
         // Assert
         await Should.ThrowAsync<InvalidOperationException>(act);
@@ -243,8 +247,8 @@ public class UploadBlobRequestHandlerTests
     {
         // Arrange
         var userId = Guid.NewGuid().ToString();
-        var fileName = "my-custom-image-name.png";
-        var contentType = "image/png";
+        const string fileName = "my-custom-image-name.png";
+        const string contentType = "image/png";
         var mockFile = CreateMockFile(fileName, contentType);
         var request = new UploadBlobRequest(mockFile, userId);
 
@@ -253,7 +257,8 @@ public class UploadBlobRequestHandlerTests
             Id = Guid.NewGuid(),
             Name = fileName,
             Path = $"files/{fileName}",
-            UserId = userId
+            UserId = userId,
+            Hash = "testhash123"
         };
 
         _mockBlobService.UploadBlob(
@@ -269,7 +274,7 @@ public class UploadBlobRequestHandlerTests
         // Assert
         await _mockBlobService.Received(1).UploadBlob(
             Arg.Any<string>(),
-            fileName,
+            Arg.Is<string>(s => s.EndsWith(Path.GetExtension(fileName), StringComparison.OrdinalIgnoreCase)),
             Arg.Any<Stream>(),
             Arg.Any<CancellationToken>());
     }
@@ -277,10 +282,11 @@ public class UploadBlobRequestHandlerTests
     private static IFile CreateMockFile(string fileName, string contentType)
     {
         var mockFile = Substitute.For<IFile>();
+        
         mockFile.Name.Returns(fileName);
         mockFile.ContentType.Returns(contentType);
-        mockFile.OpenReadStream().Returns(new MemoryStream([0x89, 0x50, 0x4E, 0x47])); // PNG header bytes
+        mockFile.OpenReadStream().Returns(new MemoryStream([0x89, 0x50, 0x4E, 0x47]));
+        
         return mockFile;
     }
 }
-

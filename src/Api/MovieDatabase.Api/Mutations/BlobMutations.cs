@@ -11,7 +11,7 @@ using MovieDatabase.Api.Infrastructure.Db;
 namespace MovieDatabase.Api.Mutations;
 
 [ExtendObjectType("Mutation")]
-public class BlobMutations
+public sealed class BlobMutations
 {
     [Authorize]
     public async Task<BlobDto> UploadBlob(ClaimsPrincipal claimsPrincipal, IFile file, [Service] IDispatcher dispatcher, [Service] IUnitOfWork unitOfWork)

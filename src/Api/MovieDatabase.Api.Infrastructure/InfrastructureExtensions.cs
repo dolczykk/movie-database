@@ -3,7 +3,6 @@ using System.Text;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Features;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -63,7 +62,7 @@ public static class InfrastructureExtensions
     {
         services.Configure<FormOptions>(options =>
         {
-            options.MultipartBodyLengthLimit = Constants.Blobs.MaxBlobSizeInBytes;
+            options.MultipartBodyLengthLimit = Constants.Blob.MaxBlobSizeInBytes;
         });
 
         return services;

@@ -7,15 +7,23 @@ namespace MovieDatabase.Api.Core.Services;
 
 internal class BlobService(BlobServiceClient blobClient) : IBlobService
 {
-
-    
     public async Task<Blob> UploadBlob(string containerName, string fileName, Stream stream, CancellationToken cancellationToken = default)
     {
         var container = blobClient.GetBlobContainerClient(containerName);
         await container.CreateIfNotExistsAsync(PublicAccessType.Blob, cancellationToken: cancellationToken);
 
         var blobInfo = await container.UploadBlobAsync(fileName, stream, cancellationToken);
+        
+        return new Blob
+        {
+            Name = fileName,
+            Path = $"{container.Uri.AbsolutePath}/{fileName}",
+            Hash = Convert.ToBase64String(blobInfo.Value.ContentHash)
+        };
+    }
 
-        return new Blob { Name = fileName, Path = $"{container.Uri.AbsolutePath}/{fileName}", };
+    public string GetBlobBaseUri()
+    {
+        return blobClient.Uri.GetLeftPart(UriPartial.Authority);
     }
 }
