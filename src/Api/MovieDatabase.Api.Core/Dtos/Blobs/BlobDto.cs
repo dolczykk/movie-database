@@ -10,5 +10,5 @@ public record BlobDto(
     string Hash) : IFrom<BlobDto, Blob>
 {
     public static BlobDto From(Blob from) 
-        => new(from.Id.ToString(), from.Name, from.Path, from.Hash);
+        => new(from.Id.ToString(), from.Name, from.GetFullPath(), from.Hash);
 }

@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Schemas\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Azure.Storage.Blobs" Version="12.25.0" />
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageReference Include="HotChocolate.AspNetCore.Authorization" Version="15.1.11" />

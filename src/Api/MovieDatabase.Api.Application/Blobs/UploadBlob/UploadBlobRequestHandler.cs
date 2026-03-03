@@ -12,8 +12,6 @@ public class UploadBlobRequestHandler(
     IBlobRepository blobRepository
 ) : IRequestHandler<UploadBlobRequest, BlobDto>
 {
-    private string _blobBaseUri = blobService.GetBlobBaseUri();
-    
     public async Task<BlobDto> HandleAsync(UploadBlobRequest request)
     {
         if (!Constants.Blob.AllowedContentTypes.Contains(request.File.ContentType))
@@ -26,17 +24,16 @@ public class UploadBlobRequestHandler(
         {
             throw new NotSupportedContentTypeApplicationException();
         }
-
-        var fileName = $"{Guid.NewGuid()}{fileExtension}";
-        var blob = await blobService.UploadBlob(Constants.Blob.ImageContainerName, fileName, request.File.OpenReadStream());
+        
+        var stream = request.File.OpenReadStream();
+        var blob = await blobService.UploadBlob(Constants.Blob.ImageContainerName, fileExtension, stream);
+        
+        await stream.DisposeAsync();
 
         blob.UserId = request.UserId;
 
         await blobRepository.Add(blob);
 
-        var path = _blobBaseUri + blob.Path;
-        blob.Path = path;
-        
         return BlobDto.From(blob);
     }
 }

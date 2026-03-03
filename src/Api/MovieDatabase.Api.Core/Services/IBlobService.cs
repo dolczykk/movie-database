@@ -4,7 +4,7 @@ namespace MovieDatabase.Api.Core.Services;
 
 public interface IBlobService
 {
-    Task<Blob> UploadBlob(string containerName, string fileName, Stream stream,
+    Task<Blob> UploadBlob(string containerName, string fileExtension, Stream stream,
         CancellationToken cancellationToken = default);
 
     string GetBlobBaseUri();
