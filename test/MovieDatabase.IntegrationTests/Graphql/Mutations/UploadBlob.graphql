@@ -1,0 +1,8 @@
+﻿mutation UploadBlob($file: Upload!) {
+  uploadBlob(file: $file) {
+    id
+    fileName
+    url
+  }
+}
+

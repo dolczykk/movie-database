@@ -7,15 +7,24 @@ var builder = DistributedApplication.CreateBuilder(args);
 var isDevelopment = builder.Environment.IsDevelopment();
 var cosmos = builder.AddAzureCosmosDB(CosmosConfiguration.ModuleName);
 
+var storage = builder.AddAzureStorage(BlobStorageConfiguration.ModuleName);
+var blobs = storage.AddBlobs(BlobStorageConfiguration.ContainerName);
+
 if (isDevelopment)
 {
     cosmos.RunAsEmulator();
+    storage.RunAsEmulator(azurite =>
+    {
+        azurite.WithLifetime(ContainerLifetime.Persistent);
+    });
 }
 
 cosmos.AddCosmosDatabase(CosmosConfiguration.DbResourceName, CosmosConfiguration.DbName);
 
 builder.AddProject<Projects.MovieDatabase_Api>(ApiConfiguration.ModuleName)
     .WithReference(cosmos)
+    .WithReference(blobs)
+    .WaitFor(blobs)
     .WaitFor(cosmos);
 
 builder.Build().Run();

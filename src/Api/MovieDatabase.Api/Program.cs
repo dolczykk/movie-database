@@ -25,6 +25,8 @@ builder.AddCosmosDbContext<AppDbContext>(CosmosConfiguration.ModuleName, databas
         });
     });
 
+builder.AddAzureBlobClient(BlobStorageConfiguration.ContainerName);
+
 builder.Services.AddApplicationDefaults();
 builder.Services.AddInfrastructureDefaults(builder.Configuration);
 builder.Services.AddCoreDefaults(builder.Configuration);
@@ -32,6 +34,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services
     .AddGraphQLServer()
     .AddAuthorization()
+    .AddType<UploadType>()
     .RegisterDbContextFactory<AppDbContext>()
     .AddMutationType(d => d.Name("Mutation"))
     .AddFiltering()
@@ -39,12 +42,13 @@ builder.Services
     .AddPagingArguments()
     .ModifyPagingOptions(opt =>
     {
-        opt.MaxPageSize = Constants.Queries.MaxPageSize;
-        opt.DefaultPageSize = Constants.Queries.DefaultPageSize;
+        opt.MaxPageSize = Constants.Query.MaxPageSize;
+        opt.DefaultPageSize = Constants.Query.DefaultPageSize;
     })
     .AddTypeExtension<FilmMutations>()
     .AddTypeExtension<UserMutations>()
     .AddTypeExtension<TokenMutations>()
+    .AddTypeExtension<BlobMutations>()
     .AddQueryType<Query>();
 
 

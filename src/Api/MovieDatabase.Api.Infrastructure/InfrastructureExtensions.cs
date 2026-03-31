@@ -2,11 +2,12 @@ using System.Security.Claims;
 using System.Text;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 
+using MovieDatabase.Api.Core;
 using MovieDatabase.Api.Infrastructure.Db;
 using MovieDatabase.Api.Infrastructure.Db.Repositories;
 
@@ -17,7 +18,8 @@ public static class InfrastructureExtensions
     public static void AddInfrastructureDefaults(this IServiceCollection services, IConfiguration configuration)
         => services.AddUnitOfWork()
             .AddRepositories()
-            .AddJwtAuthenticationDefaults(configuration);
+            .AddJwtAuthenticationDefaults(configuration)
+            .AddBlobMaxUploadLimitSize();
 
     private static IServiceCollection AddUnitOfWork(this IServiceCollection services)
         => services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -26,6 +28,7 @@ public static class InfrastructureExtensions
     {
         services.AddScoped<IFilmRepository, FilmRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IBlobRepository, BlobRepository>();
 
         return services;
     }
@@ -51,6 +54,16 @@ public static class InfrastructureExtensions
             });
 
         services.AddAuthorization();
+
+        return services;
+    }
+    
+    private static IServiceCollection AddBlobMaxUploadLimitSize(this IServiceCollection services)
+    {
+        services.Configure<FormOptions>(options =>
+        {
+            options.MultipartBodyLengthLimit = Constants.Blob.MaxBlobSizeInBytes;
+        });
 
         return services;
     }

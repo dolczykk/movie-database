@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 
+using MovieDatabase.Api.Application.Blobs.UploadBlob;
 using MovieDatabase.Api.Application.Films.CreateFilm;
 using MovieDatabase.Api.Application.Films.DeleteFilm;
 using MovieDatabase.Api.Application.Films.EditFilm;
@@ -7,6 +8,7 @@ using MovieDatabase.Api.Application.Users.AuthenticateUser;
 using MovieDatabase.Api.Application.Users.CreateUser;
 using MovieDatabase.Api.Application.Users.RevokeToken;
 using MovieDatabase.Api.Core.Cqrs;
+using MovieDatabase.Api.Core.Dtos.Blobs;
 using MovieDatabase.Api.Core.Dtos.Films;
 using MovieDatabase.Api.Core.Dtos.Users;
 
@@ -34,7 +36,8 @@ public static class ApplicationExtensions
         services.AddScoped<IRequestHandler<DeleteFilmRequest, string>, DeleteFilmRequestHandler>();
         services.AddScoped<IRequestHandler<EditFilmRequest, FilmDto>, EditFilmRequestHandler>();
         services.AddScoped<IRequestHandler<RevokeTokenRequest, RevokeTokenDto>, RevokeTokenRequestHandler>();
-
+        services.AddScoped<IRequestHandler<UploadBlobRequest, BlobDto>, UploadBlobRequestHandler>();
+        
         return services;
     }
 }

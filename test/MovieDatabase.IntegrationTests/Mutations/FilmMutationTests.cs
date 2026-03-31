@@ -213,8 +213,8 @@ public class FilmMutationTests(AspireAppHostFixture fixture)
         var loginMutation = GraphQLHelper.LoadQueryFromFile("Graphql/Mutations/LoginUser.graphql");
 
         var request = new AuthenticateUserRequest(
-            Email: "admin@example.com",
-            Password: "test"
+            Email: "Favian74@example.net",
+            Password: "example123!"
         );
 
         var loginResponse = await GraphQLHelper.ExecuteMutationAsync<LoginUserResponse>(
@@ -226,7 +226,6 @@ public class FilmMutationTests(AspireAppHostFixture fixture)
         }
 
         var error = loginResponse?.Errors?.FirstOrDefault();
-        throw new Exception($"Could not get admin token. Error: {error?.Message ?? "Unknown error"}. Check if seeded admin exists with email 'admin@example.com' and password 'test'");
-
+        throw new Exception($"Could not get admin token. Error: {error?.Message ?? "Unknown error"}. Check if seeded admin exists with email 'Favian74@example.net' and password 'example123!'");
     }
 }

@@ -13,7 +13,7 @@ using MovieDatabase.Api.Core.Dtos.Films;
 namespace MovieDatabase.Api.Mutations;
 
 [ExtendObjectType("Mutation")]
-public class FilmMutations
+public sealed class FilmMutations
 {
     [Authorize(Roles = [nameof(UserRoles.Administrator)])]
     public async Task<FilmDto> CreateFilm(ClaimsPrincipal claimsPrincipal, CreateFilmInput input,

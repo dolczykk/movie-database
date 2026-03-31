@@ -8,7 +8,7 @@ using MovieDatabase.Api.Infrastructure.Db;
 namespace MovieDatabase.Api.Mutations;
 
 [ExtendObjectType("Mutation")]
-public class TokenMutations
+public sealed class TokenMutations
 {
     [AllowAnonymous]
     public async Task<RevokeTokenDto> Revoke(RevokeTokenRequest input, [Service] IUnitOfWork unitOfWork, [Service] IDispatcher dispatcher)

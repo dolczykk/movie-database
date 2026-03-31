@@ -30,15 +30,9 @@ public class AspireAppHostFixture : IAsyncLifetime
     private async Task WaitForServicesAsync()
     {
         var stopwatch = Stopwatch.StartNew();
-        Console.WriteLine("=== Starting Aspire Services Initialization ===");
-        Console.WriteLine("Waiting for Cosmos DB emulator and API to start...");
-        Console.WriteLine("Note: First run may take 60-90 seconds for Cosmos DB emulator initialization.");
 
         const int initialWaitSeconds = 60;
-        Console.WriteLine($"Initial wait: {initialWaitSeconds} seconds...");
         await Task.Delay(TimeSpan.FromSeconds(initialWaitSeconds));
-
-        Console.WriteLine($"Initial wait complete after {stopwatch.Elapsed.TotalSeconds:F1}s. Starting health check polling...");
 
         HttpClient? client = null;
         try

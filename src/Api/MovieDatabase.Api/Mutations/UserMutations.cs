@@ -9,7 +9,7 @@ using MovieDatabase.Api.Infrastructure.Db;
 namespace MovieDatabase.Api.Mutations;
 
 [ExtendObjectType("Mutation")]
-public class UserMutations
+public sealed class UserMutations
 {
     [AllowAnonymous]
     public async Task<UserCredentialsDto> LoginUser(AuthenticateUserRequest request, [Service] IUnitOfWork unitOfWork, [Service] IDispatcher dispatcher)
