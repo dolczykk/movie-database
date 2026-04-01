@@ -25,7 +25,6 @@ jobs:
         run: dotnet build --no-restore
       - name: Setup dev certificate
         run: |
-          dotnet dev-certs https --trust
-          echo "SSL_CERT_DIR=$HOME/.aspnet/dev-certs/trust:/usr/lib/ssl/certs" >> $GITHUB_ENV
+          dotnet dev-certs https
       - name: Run tests
         run: dotnet test --no-restore --verbosity normal
