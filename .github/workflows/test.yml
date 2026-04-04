@@ -25,8 +25,9 @@ jobs:
         run: dotnet build --no-restore
       - name: Setup dev certificate
         run: |
+          mkdir -p $HOME/.aspnet/dev-certs/trust
           dotnet dev-certs https --trust
         env:
-          SSL_CERT_DIR: "${{ env.HOME }}/.aspnet/dev-certs/trust"
+          SSL_CERT_DIR: "${{ env.HOME }}/.aspnet/dev-certs/trust:${{ env.SSL_CERT_DIR }}"
       - name: Run tests
         run: dotnet test --no-restore --verbosity normal
