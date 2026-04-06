@@ -19,8 +19,5 @@
     <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" Version="1.15.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\MovieDatabase.AppHost\MovieDatabase.AppHost.csproj" />
-  </ItemGroup>
 
 </Project>

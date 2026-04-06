@@ -25,7 +25,7 @@ builder.AddCosmosDbContext<AppDbContext>(CosmosConfiguration.ModuleName, databas
         });
     });
 
-builder.AddAzureBlobClient(BlobStorageConfiguration.ContainerName);
+builder.AddAzureBlobServiceClient(BlobStorageConfiguration.ContainerName);
 
 builder.Services.AddApplicationDefaults();
 builder.Services.AddInfrastructureDefaults(builder.Configuration);

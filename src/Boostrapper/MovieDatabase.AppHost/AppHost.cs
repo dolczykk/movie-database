@@ -24,7 +24,7 @@ cosmos.AddCosmosDatabase(CosmosConfiguration.DbResourceName, CosmosConfiguration
 
 var functions = builder.AddAzureFunctionsProject<Projects.MovieDatabase_Functions>("functions")
     .WithHostStorage(storage)
-    .WithExternalHttpEndpoints();
+    .WithReference(blobs);
 
 builder.AddProject<Projects.MovieDatabase_Api>(ApiConfiguration.ModuleName)
     .WithReference(cosmos)
