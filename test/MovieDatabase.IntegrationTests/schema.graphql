@@ -1,0 +1,470 @@
+schema {
+  query: Query
+  mutation: Mutation
+}
+
+type Actor {
+  name: String!
+  surname: String!
+  id: UUID!
+}
+
+type ActorDto {
+  id: String!
+  name: String!
+  surname: String!
+}
+
+"A connection to a list of items."
+type ActorsConnection {
+  "Information to aid in pagination."
+  pageInfo: PageInfo!
+  "A list of edges."
+  edges: [ActorsEdge!]
+  "A flattened list of the nodes."
+  nodes: [Actor!]
+}
+
+"An edge in a connection."
+type ActorsEdge {
+  "A cursor for use in pagination."
+  cursor: String!
+  "The item at the end of the edge."
+  node: Actor!
+}
+
+type BlobDto {
+  id: String!
+  fileName: String!
+  url: String!
+  hash: String!
+}
+
+type DirectorDto {
+  id: String!
+  name: String!
+  surname: String!
+}
+
+type DirectorInfo {
+  name: String!
+  surname: String!
+  id: UUID!
+}
+
+"A connection to a list of items."
+type DirectorsConnection {
+  "Information to aid in pagination."
+  pageInfo: PageInfo!
+  "A list of edges."
+  edges: [DirectorsEdge!]
+  "A flattened list of the nodes."
+  nodes: [DirectorInfo!]
+}
+
+"An edge in a connection."
+type DirectorsEdge {
+  "A cursor for use in pagination."
+  cursor: String!
+  "The item at the end of the edge."
+  node: DirectorInfo!
+}
+
+type Film {
+  title: String!
+  releaseDate: LocalDate!
+  director: DirectorInfo!
+  actors: [Actor!]!
+  genres: [Genre!]!
+  producer: ProducerInfo!
+  description: String
+  creatorId: String!
+  id: UUID!
+  thumbnailUrl: String
+}
+
+type FilmDto {
+  id: String!
+  title: String!
+  description: String
+  releaseDate: LocalDate!
+  actors: [ActorDto!]!
+  genres: [GenreDto!]!
+  producer: ProducerDto!
+  director: DirectorDto!
+}
+
+"A connection to a list of items."
+type FilmsConnection {
+  "Information to aid in pagination."
+  pageInfo: PageInfo!
+  "A list of edges."
+  edges: [FilmsEdge!]
+  "A flattened list of the nodes."
+  nodes: [Film!]
+}
+
+"An edge in a connection."
+type FilmsEdge {
+  "A cursor for use in pagination."
+  cursor: String!
+  "The item at the end of the edge."
+  node: Film!
+}
+
+type Genre {
+  name: String!
+  id: UUID!
+}
+
+type GenreDto {
+  id: String!
+  name: String!
+}
+
+"A connection to a list of items."
+type GenresConnection {
+  "Information to aid in pagination."
+  pageInfo: PageInfo!
+  "A list of edges."
+  edges: [GenresEdge!]
+  "A flattened list of the nodes."
+  nodes: [Genre!]
+}
+
+"An edge in a connection."
+type GenresEdge {
+  "A cursor for use in pagination."
+  cursor: String!
+  "The item at the end of the edge."
+  node: Genre!
+}
+
+type Mutation {
+  createFilm(input: CreateFilmInput!): FilmDto! @authorize(roles: [ "Administrator" ])
+  deleteFilm(filmId: String!): String! @authorize(roles: [ "Administrator" ])
+  editFilm(input: EditFilmInput!): FilmDto! @authorize(roles: [ "Administrator", "Moderator" ])
+  loginUser(request: AuthenticateUserRequestInput!): UserCredentialsDto! @allowAnonymous
+  registerUser(request: CreateUserRequestInput!): UserCredentialsDto! @allowAnonymous
+  revoke(input: RevokeTokenRequestInput!): RevokeTokenDto! @allowAnonymous
+  uploadBlob(file: Upload!): BlobDto! @authorize
+}
+
+"Information about pagination in a connection."
+type PageInfo {
+  "Indicates whether more edges exist following the set defined by the clients arguments."
+  hasNextPage: Boolean!
+  "Indicates whether more edges exist prior the set defined by the clients arguments."
+  hasPreviousPage: Boolean!
+  "When paginating backwards, the cursor to continue."
+  startCursor: String
+  "When paginating forwards, the cursor to continue."
+  endCursor: String
+}
+
+type ProducerDto {
+  id: String!
+  name: String!
+}
+
+type ProducerInfo {
+  name: String!
+  id: UUID!
+}
+
+"A connection to a list of items."
+type ProducersConnection {
+  "Information to aid in pagination."
+  pageInfo: PageInfo!
+  "A list of edges."
+  edges: [ProducersEdge!]
+  "A flattened list of the nodes."
+  nodes: [ProducerInfo!]
+}
+
+"An edge in a connection."
+type ProducersEdge {
+  "A cursor for use in pagination."
+  cursor: String!
+  "The item at the end of the edge."
+  node: ProducerInfo!
+}
+
+type Query {
+  films("Returns the first _n_ elements from the list." first: Int "Returns the elements in the list that come after the specified cursor." after: String "Returns the last _n_ elements from the list." last: Int "Returns the elements in the list that come before the specified cursor." before: String where: FilmFilterInput order: [FilmSortInput!]): FilmsConnection
+  actors("Returns the first _n_ elements from the list." first: Int "Returns the elements in the list that come after the specified cursor." after: String "Returns the last _n_ elements from the list." last: Int "Returns the elements in the list that come before the specified cursor." before: String where: ActorFilterInput order: [ActorSortInput!]): ActorsConnection
+  genres("Returns the first _n_ elements from the list." first: Int "Returns the elements in the list that come after the specified cursor." after: String "Returns the last _n_ elements from the list." last: Int "Returns the elements in the list that come before the specified cursor." before: String where: GenreFilterInput order: [GenreSortInput!]): GenresConnection
+  directors("Returns the first _n_ elements from the list." first: Int "Returns the elements in the list that come after the specified cursor." after: String "Returns the last _n_ elements from the list." last: Int "Returns the elements in the list that come before the specified cursor." before: String where: DirectorInfoFilterInput order: [DirectorInfoSortInput!]): DirectorsConnection
+  producers("Returns the first _n_ elements from the list." first: Int "Returns the elements in the list that come after the specified cursor." after: String "Returns the last _n_ elements from the list." last: Int "Returns the elements in the list that come before the specified cursor." before: String where: ProducerInfoFilterInput order: [ProducerInfoSortInput!]): ProducersConnection
+}
+
+type RevokeTokenDto {
+  accessToken: RevokeTokenDto_JwtToken!
+  refreshToken: RevokeTokenDto_JwtToken!
+}
+
+type RevokeTokenDto_JwtToken {
+  value: String!
+  expiresAt: DateTime!
+}
+
+type UserCredentialsDto {
+  id: String!
+  username: String!
+  email: String!
+  role: String
+  token: String
+  expireTime: DateTime
+  refreshToken: String
+  refreshTokenExpireTime: DateTime
+}
+
+input ActorFilterInput {
+  and: [ActorFilterInput!]
+  or: [ActorFilterInput!]
+  name: StringOperationFilterInput
+  surname: StringOperationFilterInput
+  id: UuidOperationFilterInput
+}
+
+input ActorPlaceholderInput {
+  id: String
+  name: String
+  surname: String
+}
+
+input ActorSortInput {
+  name: SortEnumType
+  surname: SortEnumType
+  id: SortEnumType
+}
+
+input AuthenticateUserRequestInput {
+  email: String!
+  password: String!
+}
+
+input CreateFilmInput {
+  title: String!
+  releaseDate: LocalDate!
+  description: String
+  actors: [ActorPlaceholderInput!]!
+  genres: [GenrePlaceholderInput!]!
+  director: DirectorPlaceholderInput!
+  producer: ProducerPlaceholderInput!
+}
+
+input CreateUserRequestInput {
+  username: String!
+  email: String!
+  password: String!
+}
+
+input DirectorInfoFilterInput {
+  and: [DirectorInfoFilterInput!]
+  or: [DirectorInfoFilterInput!]
+  name: StringOperationFilterInput
+  surname: StringOperationFilterInput
+  id: UuidOperationFilterInput
+}
+
+input DirectorInfoSortInput {
+  name: SortEnumType
+  surname: SortEnumType
+  id: SortEnumType
+}
+
+input DirectorPlaceholderInput {
+  id: String
+  name: String
+  surname: String
+}
+
+input EditFilmActorPlaceholderInput {
+  id: String
+  name: String
+  surname: String
+}
+
+input EditFilmDirectorPlaceholderInput {
+  id: String
+  name: String
+  surname: String
+}
+
+input EditFilmGenrePlaceholderInput {
+  id: String
+  name: String
+}
+
+input EditFilmInput {
+  id: String!
+  title: String!
+  releaseDate: LocalDate!
+  description: String
+  actors: [EditFilmActorPlaceholderInput!]!
+  genres: [EditFilmGenrePlaceholderInput!]!
+  director: EditFilmDirectorPlaceholderInput!
+  producer: EditFilmProducerPlaceholderInput!
+}
+
+input EditFilmProducerPlaceholderInput {
+  id: String
+  name: String
+}
+
+input FilmFilterInput {
+  and: [FilmFilterInput!]
+  or: [FilmFilterInput!]
+  title: StringOperationFilterInput
+  releaseDate: LocalDateOperationFilterInput
+  director: DirectorInfoFilterInput
+  actors: ListFilterInputTypeOfActorFilterInput
+  genres: ListFilterInputTypeOfGenreFilterInput
+  producer: ProducerInfoFilterInput
+  description: StringOperationFilterInput
+  creatorId: StringOperationFilterInput
+  id: UuidOperationFilterInput
+}
+
+input FilmSortInput {
+  title: SortEnumType
+  releaseDate: SortEnumType
+  director: DirectorInfoSortInput
+  producer: ProducerInfoSortInput
+  description: SortEnumType
+  creatorId: SortEnumType
+  id: SortEnumType
+}
+
+input GenreFilterInput {
+  and: [GenreFilterInput!]
+  or: [GenreFilterInput!]
+  name: StringOperationFilterInput
+  id: UuidOperationFilterInput
+}
+
+input GenrePlaceholderInput {
+  id: String
+  name: String
+}
+
+input GenreSortInput {
+  name: SortEnumType
+  id: SortEnumType
+}
+
+input ListFilterInputTypeOfActorFilterInput {
+  all: ActorFilterInput
+  none: ActorFilterInput
+  some: ActorFilterInput
+  any: Boolean
+}
+
+input ListFilterInputTypeOfGenreFilterInput {
+  all: GenreFilterInput
+  none: GenreFilterInput
+  some: GenreFilterInput
+  any: Boolean
+}
+
+input LocalDateOperationFilterInput {
+  eq: LocalDate
+  neq: LocalDate
+  in: [LocalDate]
+  nin: [LocalDate]
+  gt: LocalDate
+  ngt: LocalDate
+  gte: LocalDate
+  ngte: LocalDate
+  lt: LocalDate
+  nlt: LocalDate
+  lte: LocalDate
+  nlte: LocalDate
+}
+
+input ProducerInfoFilterInput {
+  and: [ProducerInfoFilterInput!]
+  or: [ProducerInfoFilterInput!]
+  name: StringOperationFilterInput
+  id: UuidOperationFilterInput
+}
+
+input ProducerInfoSortInput {
+  name: SortEnumType
+  id: SortEnumType
+}
+
+input ProducerPlaceholderInput {
+  id: String
+  name: String
+}
+
+input RevokeTokenRequestInput {
+  accessToken: String!
+  refreshToken: String!
+}
+
+input StringOperationFilterInput {
+  and: [StringOperationFilterInput!]
+  or: [StringOperationFilterInput!]
+  eq: String
+  neq: String
+  contains: String
+  ncontains: String
+  in: [String]
+  nin: [String]
+  startsWith: String
+  nstartsWith: String
+  endsWith: String
+  nendsWith: String
+}
+
+input UuidOperationFilterInput {
+  eq: UUID
+  neq: UUID
+  in: [UUID]
+  nin: [UUID]
+  gt: UUID
+  ngt: UUID
+  gte: UUID
+  ngte: UUID
+  lt: UUID
+  nlt: UUID
+  lte: UUID
+  nlte: UUID
+}
+
+"Defines when a policy shall be executed."
+enum ApplyPolicy {
+  "Before the resolver was executed."
+  BEFORE_RESOLVER
+  "After the resolver was executed."
+  AFTER_RESOLVER
+  "The policy is applied in the validation step before the execution."
+  VALIDATION
+}
+
+enum SortEnumType {
+  ASC
+  DESC
+}
+
+directive @allowAnonymous repeatable on FIELD_DEFINITION
+
+"The authorize directive."
+directive @authorize("The name of the authorization policy that determines access to the annotated resource." policy: String "Roles that are allowed to access the annotated resource." roles: [String!] "Defines when when the authorize directive shall be applied.By default the authorize directives are applied during the validation phase." apply: ApplyPolicy! = BEFORE_RESOLVER) repeatable on OBJECT | FIELD_DEFINITION
+
+"The `@specifiedBy` directive is used within the type system definition language to provide a URL for specifying the behavior of custom scalar definitions."
+directive @specifiedBy("The specifiedBy URL points to a human-readable specification. This field will only read a result for scalar types." url: String!) on SCALAR
+
+"The `DateTime` scalar represents an ISO-8601 compliant date time type."
+scalar DateTime @specifiedBy(url: "https:\/\/www.graphql-scalars.com\/date-time")
+
+"The `LocalDate` scalar type represents a ISO date string, represented as UTF-8 character sequences YYYY-MM-DD. The scalar follows the specification defined in RFC3339"
+scalar LocalDate
+
+scalar UUID @specifiedBy(url: "https:\/\/tools.ietf.org\/html\/rfc4122")
+
+"The `Upload` scalar type represents a file upload."
+scalar Upload

@@ -1,21 +1,33 @@
-﻿using HotChocolate.Execution;
+using HotChocolate.Execution;
+using HotChocolate.Types;
 
 using Microsoft.Extensions.DependencyInjection;
 
 using MovieDatabase.Api;
+using MovieDatabase.Api.Core;
 using MovieDatabase.Api.Mutations;
+using MovieDatabase.Api.Types;
 
 var serviceCollection = new ServiceCollection();
 
 serviceCollection.AddGraphQL()
-    .AddQueryType<Query>()
     .AddAuthorization()
+    .AddType<UploadType>()
     .AddMutationType(d => d.Name("Mutation"))
     .AddFiltering()
     .AddSorting()
     .AddPagingArguments()
+    .ModifyPagingOptions(opt =>
+    {
+        opt.MaxPageSize = Constants.Query.MaxPageSize;
+        opt.DefaultPageSize = Constants.Query.DefaultPageSize;
+    })
     .AddTypeExtension<FilmMutations>()
-    .AddTypeExtension<UserMutations>();
+    .AddTypeExtension<UserMutations>()
+    .AddTypeExtension<TokenMutations>()
+    .AddTypeExtension<BlobMutations>()
+    .AddTypeExtension<FilmTypeExtensions>()
+    .AddQueryType<Query>();
 
 await using var services = serviceCollection.BuildServiceProvider();
 var executor = await services.GetRequiredService<IRequestExecutorResolver>()

@@ -482,3 +482,9 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# Nuxt frontend
+src/Frontend/MovieDatabase.Web/node_modules/
+src/Frontend/MovieDatabase.Web/.nuxt/
+src/Frontend/MovieDatabase.Web/.output/
+src/Frontend/MovieDatabase.Web/dist/

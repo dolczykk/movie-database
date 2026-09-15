@@ -1,0 +1,56 @@
+query GetFilms($first: Int!, $after: String, $where: FilmFilterInput, $order: [FilmSortInput!]) {
+  films(first: $first, after: $after, where: $where, order: $order) {
+    nodes {
+      id
+      title
+      description
+      releaseDate
+      thumbnailUrl
+      director {
+        id
+        name
+        surname
+      }
+      genres {
+        id
+        name
+      }
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+  }
+}
+
+query GetFilmById($id: UUID!) {
+  films(first: 1, where: { id: { eq: $id } }) {
+    nodes {
+      id
+      title
+      description
+      releaseDate
+      thumbnailUrl
+      actors {
+        id
+        name
+        surname
+      }
+      genres {
+        id
+        name
+      }
+      director {
+        id
+        name
+        surname
+      }
+      producer {
+        id
+        name
+      }
+    }
+  }
+}

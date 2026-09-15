@@ -26,12 +26,20 @@ var functions = builder.AddAzureFunctionsProject<Projects.MovieDatabase_Function
     .WithHostStorage(storage)
     .WithReference(blobs);
 
-builder.AddProject<Projects.MovieDatabase_Api>(ApiConfiguration.ModuleName)
+var api = builder.AddProject<Projects.MovieDatabase_Api>(ApiConfiguration.ModuleName)
     .WithReference(cosmos)
     .WithReference(blobs)
     .WithReference(functions)
     .WaitFor(blobs)
     .WaitFor(cosmos);
+
+builder.AddJavaScriptApp(WebConfiguration.ModuleName, "../../Frontend/MovieDatabase.Web", "dev")
+    .WithPnpm()
+    .WithReference(api)
+    .WaitFor(api)
+    .WithEnvironment("NUXT_GRAPHQL_ENDPOINT", $"{api.GetEndpoint("http")}/graphql")
+    .WithHttpEndpoint(env: "PORT")
+    .WithExternalHttpEndpoints();
 
 builder.Build().Run();
 

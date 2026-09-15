@@ -63,6 +63,35 @@ dotnet test
 
 The first test run will also download the Cosmos DB emulator if you haven't run the application yet. Subsequent runs are faster since the emulator container is cached.
 
+### Frontend
+
+The Nuxt frontend lives in `src/Frontend/MovieDatabase.Web` and starts automatically with the
+AppHost — open the `web` resource from the Aspire dashboard. The AppHost injects the API's URL
+into the Nuxt process as `NUXT_GRAPHQL_ENDPOINT` (via `WithReference`/`WithEnvironment` on the
+`web` resource in `AppHost.cs`), so no manual configuration is needed in this mode.
+
+To run it standalone against an already-running API:
+
+```bash
+cd src/Frontend/MovieDatabase.Web
+cp .env.example .env    # then set NUXT_GRAPHQL_ENDPOINT to the API's URL
+pnpm install
+pnpm dev
+```
+
+Regenerate the typed GraphQL client after any API schema change:
+
+```bash
+dotnet run --project utils/MovieDatabase.GenerateSchema/MovieDatabase.GenerateSchema.csproj
+cd src/Frontend/MovieDatabase.Web && pnpm codegen
+```
+
+**A note for dependency upgrades**: `typescript` is constrained to the 5.x line (`^5.9.3`) in
+`src/Frontend/MovieDatabase.Web/package.json`. TypeScript 7.0.2 crashes `vue-tsc` — TS7's package
+exports dropped the classic `typescript/lib/tsc` entry point that `vue-tsc` (and therefore
+`pnpm typecheck` / `nuxt typecheck`) depends on. Do not let Renovate/Dependabot bump `typescript`
+past the `5.x` line until `vue-tsc` supports TypeScript 7's new export surface.
+
 ### Troubleshooting
 
 **Docker not running**: Ensure Docker Desktop is started before running the application.
