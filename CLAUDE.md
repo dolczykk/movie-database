@@ -54,7 +54,7 @@ JWT bearer auth is configured in `Infrastructure/InfrastructureExtensions.cs` (`
 
 ### Aspire orchestration (`src/Boostrapper/`)
 
-`AppHost.cs` wires: Azure Cosmos DB (emulator in dev via `RunAsEmulator()`), Azure Storage/Blobs (Azurite emulator in dev, `ContainerLifetime.Persistent`), the `MovieDatabase.Api` project, and the `MovieDatabase.Functions` Azure Functions project (`WithHostStorage`, referencing the blob container). Resource/module names are centralized as constants in `src/Shared/MovieDatabase.SharedKernel/Configurations/*Configuration.cs` (`CosmosConfiguration`, `BlobStorageConfiguration`, `ApiConfiguration`) — reuse these instead of hardcoding resource-name strings.
+`AppHost.cs` wires: Azure Cosmos DB (emulator in dev via `RunAsPreviewEmulator()` — the Linux/vNext-preview emulator image, not the classic `RunAsEmulator()`), Azure Storage/Blobs (Azurite emulator in dev, `ContainerLifetime.Persistent`), the `MovieDatabase.Api` project, and the `MovieDatabase.Functions` Azure Functions project (`WithHostStorage`, referencing the blob container). Resource/module names are centralized as constants in `src/Shared/MovieDatabase.SharedKernel/Configurations/*Configuration.cs` (`CosmosConfiguration`, `BlobStorageConfiguration`, `ApiConfiguration`) — reuse these instead of hardcoding resource-name strings. Unlike the Azurite container, the Cosmos emulator container has no persistent volume — every AppHost restart reseeds a fresh, empty database.
 
 ### Functions (`src/Functions/MovieDatabase.Functions/`)
 
@@ -64,7 +64,7 @@ Isolated-worker Azure Functions app. `ImageBlobTrigger` fires on blobs uploaded 
 
 - **Unit tests** (`test/MovieDatabase.UnitTests`) target CQRS handlers and Core services/utils directly, using NSubstitute for mocking repositories/services and AutoFixture (`AutoFixture.Xunit2`) for test data generation; assertions use Shouldly.
 - **Integration tests** (`test/MovieDatabase.IntegrationTests`) use `Aspire.Hosting.Testing`'s `DistributedApplicationTestingBuilder` to boot the real AppHost topology (API + Cosmos DB emulator) per test class via `IClassFixture<AspireAppHostFixture>` (`Fixtures/AspireAppHostFixture.cs`, `IAsyncLifetime`). Tests POST raw JSON to `/graphql` through `GraphQLHelper` rather than using a typed GraphQL client, deserializing into a generic `GraphQLResponse<T>`. `AuthenticationHelper` handles registration/login to obtain bearer tokens for authorized mutation tests. Test data uses `Guid.NewGuid("N")` for unique emails/usernames to allow parallel execution.
-- A default admin seed user (`admin@example.com` / `test`) and film data are loaded via `DbSeeder` on first Cosmos DB creation (`UseAsyncSeeding` in `Program.cs`).
+- Seed users and film data are loaded via `DbSeeder` on first Cosmos DB creation (`UseAsyncSeeding` in `Program.cs`), reading `src/Api/MovieDatabase.Api/Data/users.json` / `films.json`. These are Bogus/Faker-generated fixtures (`utils/MovieDatabase.FakeDataGenerator`), not fixed `admin@example.com`-style accounts — every seeded user shares the plaintext password `example123!` (`BogusUserExtensions.cs`), but emails/roles are random per generation, so check `Data/users.json` for the current `Administrator`-role entry's email rather than assuming one.
 
 ### Utils (`utils/`)
 

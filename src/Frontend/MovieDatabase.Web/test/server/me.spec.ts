@@ -32,17 +32,17 @@ describe('GET /api/auth/me', () => {
     expect(setResponseHeader).toHaveBeenCalledWith(event, 'cache-control', 'no-store')
   })
 
-  it('returns null when there is no access token', () => {
+  it('returns { user: null } when there is no access token', () => {
     readAuthCookies.mockReturnValue({ accessToken: null, refreshToken: null })
 
-    expect(handler(event)).toBeNull()
+    expect(handler(event)).toEqual({ user: null })
   })
 
-  it('returns null for an expired token', () => {
+  it('returns { user: null } for an expired token', () => {
     const token = fakeToken({ jti: '1', sub: 'alice', email: 'alice@example.com', role: 'Administrator', exp: 0 })
     readAuthCookies.mockReturnValue({ accessToken: token, refreshToken: 'r' })
 
-    expect(handler(event)).toBeNull()
+    expect(handler(event)).toEqual({ user: null })
   })
 
   it('returns the decoded user for a valid, unexpired token', () => {
@@ -51,10 +51,12 @@ describe('GET /api/auth/me', () => {
     readAuthCookies.mockReturnValue({ accessToken: token, refreshToken: 'r' })
 
     expect(handler(event)).toEqual({
-      id: 'user-1',
-      username: 'alice',
-      email: 'alice@example.com',
-      role: 'Administrator',
+      user: {
+        id: 'user-1',
+        username: 'alice',
+        email: 'alice@example.com',
+        role: 'Administrator',
+      },
     })
   })
 })

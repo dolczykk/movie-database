@@ -46,6 +46,10 @@ builder.Services
         opt.MaxPageSize = Constants.Query.MaxPageSize;
         opt.DefaultPageSize = Constants.Query.DefaultPageSize;
     })
+    .ModifyCostOptions(opt =>
+    {
+        opt.MaxFieldCost = 5000;
+    })
     .AddTypeExtension<FilmMutations>()
     .AddTypeExtension<UserMutations>()
     .AddTypeExtension<TokenMutations>()

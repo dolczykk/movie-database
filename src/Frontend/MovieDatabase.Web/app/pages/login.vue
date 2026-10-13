@@ -45,11 +45,11 @@ async function onSubmit() {
 
     <UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
       <UFormField label="Email" name="email">
-        <UInput v-model="state.email" type="email" autocomplete="email" />
+        <UInput v-model="state.email" type="email" autocomplete="email" class="w-full" />
       </UFormField>
 
       <UFormField label="Password" name="password">
-        <UInput v-model="state.password" type="password" autocomplete="current-password" />
+        <UInput v-model="state.password" type="password" autocomplete="current-password" class="w-full" />
       </UFormField>
 
       <UButton type="submit" :loading="pending" block>

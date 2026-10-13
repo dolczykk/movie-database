@@ -10,10 +10,9 @@ var cosmos = builder.AddAzureCosmosDB(CosmosConfiguration.ModuleName);
 var storage = builder.AddAzureStorage(BlobStorageConfiguration.ModuleName);
 var blobs = storage.AddBlobs(BlobStorageConfiguration.ContainerName);
 
-
 if (isDevelopment)
 {
-    cosmos.RunAsEmulator();
+    cosmos.RunAsPreviewEmulator();
     storage.RunAsEmulator(azurite =>
     {
         azurite.WithLifetime(ContainerLifetime.Persistent);

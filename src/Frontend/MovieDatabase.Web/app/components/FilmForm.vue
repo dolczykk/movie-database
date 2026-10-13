@@ -65,28 +65,28 @@ function onSubmit() {
 <template>
   <UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
     <UFormField label="Title" name="title">
-      <UInput v-model="state.title" />
+      <UInput v-model="state.title" class="w-full" />
     </UFormField>
 
     <UFormField label="Release date" name="releaseDate">
-      <UInput v-model="state.releaseDate" type="date" />
+      <UInput v-model="state.releaseDate" type="date" class="w-full" />
     </UFormField>
 
     <UFormField label="Description" name="description">
-      <UTextarea v-model="state.description" />
+      <UTextarea v-model="state.description" class="w-full" />
     </UFormField>
 
     <div class="grid gap-4 sm:grid-cols-2">
       <UFormField label="Director first name" name="director.name">
-        <UInput v-model="state.director.name" />
+        <UInput v-model="state.director.name" class="w-full" />
       </UFormField>
       <UFormField label="Director surname" name="director.surname">
-        <UInput v-model="state.director.surname" />
+        <UInput v-model="state.director.surname" class="w-full" />
       </UFormField>
     </div>
 
     <UFormField label="Producer" name="producer.name">
-      <UInput v-model="state.producer.name" />
+      <UInput v-model="state.producer.name" class="w-full" />
     </UFormField>
 
     <div>
@@ -97,8 +97,8 @@ function onSubmit() {
         </UButton>
       </div>
       <div v-for="(actor, index) in state.actors" :key="index" class="mb-2 flex gap-2">
-        <UInput v-model="actor.name" placeholder="First name" />
-        <UInput v-model="actor.surname" placeholder="Surname" />
+        <UInput v-model="actor.name" placeholder="First name" class="w-full" />
+        <UInput v-model="actor.surname" placeholder="Surname" class="w-full" />
         <UButton size="xs" variant="ghost" color="error" @click="removeActor(index)">
           Remove
         </UButton>
@@ -113,7 +113,7 @@ function onSubmit() {
         </UButton>
       </div>
       <div v-for="(genre, index) in state.genres" :key="index" class="mb-2 flex gap-2">
-        <UInput v-model="genre.name" placeholder="Genre" />
+        <UInput v-model="genre.name" placeholder="Genre" class="w-full" />
         <UButton size="xs" variant="ghost" color="error" @click="removeGenre(index)">
           Remove
         </UButton>

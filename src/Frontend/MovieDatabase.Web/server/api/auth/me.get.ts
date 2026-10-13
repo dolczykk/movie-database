@@ -2,7 +2,7 @@ import { decodeJwtPayload, isExpired } from '../../../lib/jwt'
 import { readAuthCookies } from '../../utils/authCookies'
 import type { AuthUser } from '../../utils/authOperations'
 
-export default defineEventHandler((event): AuthUser | null => {
+export default defineEventHandler((event): { user: AuthUser | null } => {
   // This response varies per visitor's cookie (id/username/email/role for
   // whoever's access token it is) and GETs without explicit cache
   // directives are heuristically cacheable by shared caches -- without
@@ -12,18 +12,25 @@ export default defineEventHandler((event): AuthUser | null => {
 
   const { accessToken } = readAuthCookies(event)
   if (!accessToken) {
-    return null
+    // A bare `null` return makes h3 send an empty-bodied 204 (see
+    // `handleHandlerResponse` in h3), which `useFetch` then parses as
+    // `undefined` rather than `null` -- tripping Nuxt's NUXT_E3006
+    // diagnostic. Wrapping in an object keeps the top-level return value
+    // always JSON-serialisable.
+    return { user: null }
   }
 
   const payload = decodeJwtPayload(accessToken)
   if (!payload || isExpired(payload)) {
-    return null
+    return { user: null }
   }
 
   return {
-    id: payload.jti,
-    username: payload.sub,
-    email: payload.email,
-    role: payload.role,
+    user: {
+      id: payload.jti,
+      username: payload.sub,
+      email: payload.email,
+      role: payload.role,
+    },
   }
 })
