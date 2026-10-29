@@ -252,6 +252,7 @@ input CreateFilmInput {
   genres: [GenrePlaceholderInput!]!
   director: DirectorPlaceholderInput!
   producer: ProducerPlaceholderInput!
+  thumbnail: String
 }
 
 input CreateUserRequestInput {
@@ -306,6 +307,7 @@ input EditFilmInput {
   genres: [EditFilmGenrePlaceholderInput!]!
   director: EditFilmDirectorPlaceholderInput!
   producer: EditFilmProducerPlaceholderInput!
+  thumbnail: String
 }
 
 input EditFilmProducerPlaceholderInput {

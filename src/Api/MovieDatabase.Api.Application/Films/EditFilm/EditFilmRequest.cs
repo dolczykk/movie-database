@@ -12,7 +12,8 @@ public sealed record EditFilmRequest(
     EditFilmRequest.EditFilmActorPlaceholder[] Actors,
     EditFilmRequest.EditFilmGenrePlaceholder[] Genres,
     EditFilmRequest.EditFilmDirectorPlaceholder Director,
-    EditFilmRequest.EditFilmProducerPlaceholder Producer) : IRequest<FilmDto>, IFrom<EditFilmRequest, EditFilmInput>
+    EditFilmRequest.EditFilmProducerPlaceholder Producer,
+    string? Thumbnail = null) : IRequest<FilmDto>, IFrom<EditFilmRequest, EditFilmInput>
 {
     public sealed record EditFilmActorPlaceholder(string? Id, string? Name, string? Surname);
 
@@ -33,6 +34,7 @@ public sealed record EditFilmRequest(
             from.Actors.Select(a => new EditFilmActorPlaceholder(a.Id, a.Name, a.Surname)).ToArray(),
             from.Genres.Select(g => new EditFilmGenrePlaceholder(g.Id, g.Name)).ToArray(),
             new EditFilmDirectorPlaceholder(from.Director.Id, from.Director.Name, from.Director.Surname),
-            new EditFilmProducerPlaceholder(from.Producer.Id, from.Producer.Name)
+            new EditFilmProducerPlaceholder(from.Producer.Id, from.Producer.Name),
+            from.Thumbnail
         );
 }

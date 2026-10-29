@@ -11,7 +11,8 @@ public sealed record CreateFilmRequest(
     CreateFilmRequest.ActorPlaceholder[] Actors,
     CreateFilmRequest.GenrePlaceholder[] Genres,
     CreateFilmRequest.DirectorPlaceholder Director,
-    CreateFilmRequest.ProducerPlaceholder Producer) : IRequest<FilmDto>, IFrom<CreateFilmRequest, CreateFilmInput>
+    CreateFilmRequest.ProducerPlaceholder Producer,
+    string? Thumbnail = null) : IRequest<FilmDto>, IFrom<CreateFilmRequest, CreateFilmInput>
 {
     public sealed record ActorPlaceholder(string? Id, string Name, string Surname);
 
@@ -31,6 +32,7 @@ public sealed record CreateFilmRequest(
             from.Actors.Select(a => new ActorPlaceholder(a.Id, a.Name, a.Surname)).ToArray(),
             from.Genres.Select(g => new GenrePlaceholder(g.Id, g.Name)).ToArray(),
             new DirectorPlaceholder(from.Director.Id, from.Director.Name, from.Director.Surname),
-            new ProducerPlaceholder(from.Producer.Id, from.Producer.Name)
+            new ProducerPlaceholder(from.Producer.Id, from.Producer.Name),
+            from.Thumbnail
         );
 }

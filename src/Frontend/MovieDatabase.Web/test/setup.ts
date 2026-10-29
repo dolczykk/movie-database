@@ -10,5 +10,11 @@ config.global.stubs = {
   UBadge: { template: '<span><slot /></span>' },
   UButton: { template: '<button><slot /></button>' },
   UInput: { template: '<input>' },
+  UTextarea: { template: '<textarea></textarea>' },
+  UFormField: { template: '<div><slot /></div>' },
+  // Real UForm runs zod validation before emitting `submit`; stubbed as a
+  // plain form so FilmForm's own `onSubmit` wiring can be tested without
+  // needing every field to satisfy the schema.
+  UForm: { template: '<form @submit.prevent="$emit(\'submit\')"><slot /></form>' },
   NuxtLink: { template: '<a><slot /></a>' },
 }

@@ -25,6 +25,7 @@ async function onSubmit(value: FilmFormValue) {
         producer: { name: value.producer.name },
         actors: value.actors,
         genres: value.genres,
+        thumbnail: value.thumbnailId ?? null,
       },
     })
     await navigateTo(`/films/${result.createFilm.id}`)

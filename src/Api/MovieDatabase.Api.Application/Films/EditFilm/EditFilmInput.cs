@@ -8,7 +8,8 @@ public sealed record EditFilmInput(
     EditFilmInput.EditFilmActorPlaceholder[] Actors,
     EditFilmInput.EditFilmGenrePlaceholder[] Genres,
     EditFilmInput.EditFilmDirectorPlaceholder Director,
-    EditFilmInput.EditFilmProducerPlaceholder Producer)
+    EditFilmInput.EditFilmProducerPlaceholder Producer,
+    string? Thumbnail = null)
 {
     public sealed record EditFilmActorPlaceholder(string? Id, string? Name, string? Surname);
 

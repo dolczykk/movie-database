@@ -21,6 +21,15 @@ public sealed class EditFilmRequestHandler(IFilmRepository filmRepository, IUnit
         film.Description = request.Description;
         film.ReleaseDate = request.ReleaseDate;
 
+        // Unlike every other field here, Thumbnail is not unconditionally
+        // overwritten: it's only sent when the visitor picked a new image
+        // this edit session (there's no "remove thumbnail" UI), so an
+        // omitted/null value must preserve whatever the film already has.
+        if (request.Thumbnail is not null)
+        {
+            film.Thumbnail = request.Thumbnail;
+        }
+
         film.Director = new DirectorInfo
         {
             Id = request.Director.Id != null ? Guid.Parse(request.Director.Id) : Guid.NewGuid(),
@@ -47,7 +56,7 @@ public sealed class EditFilmRequestHandler(IFilmRepository filmRepository, IUnit
             Name = g.Name!
         }).ToList();
 
-        filmRepository.Add(film);
+        filmRepository.Update(film);
 
         await unitOfWork.Commit();
 

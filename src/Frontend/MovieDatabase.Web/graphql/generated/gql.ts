@@ -14,10 +14,12 @@ import type { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-
  * Learn more about it here: https://the-guild.dev/graphql/codegen/plugins/presets/preset-client#reducing-bundle-size
  */
 type Documents = {
+    "mutation UploadBlob($file: Upload!) {\n  uploadBlob(file: $file) {\n    id\n    fileName\n    url\n  }\n}": typeof types.UploadBlobDocument,
     "mutation CreateFilm($input: CreateFilmInput!) {\n  createFilm(input: $input) {\n    id\n    title\n  }\n}\n\nmutation EditFilm($input: EditFilmInput!) {\n  editFilm(input: $input) {\n    id\n    title\n  }\n}\n\nmutation DeleteFilm($filmId: String!) {\n  deleteFilm(filmId: $filmId)\n}": typeof types.CreateFilmDocument,
     "query GetFilms($first: Int!, $after: String, $where: FilmFilterInput, $order: [FilmSortInput!]) {\n  films(first: $first, after: $after, where: $where, order: $order) {\n    nodes {\n      id\n      title\n      description\n      releaseDate\n      thumbnailUrl\n      director {\n        id\n        name\n        surname\n      }\n      genres {\n        id\n        name\n      }\n    }\n    pageInfo {\n      hasNextPage\n      hasPreviousPage\n      startCursor\n      endCursor\n    }\n  }\n}\n\nquery GetFilmById($id: UUID!) {\n  films(first: 1, where: {id: {eq: $id}}) {\n    nodes {\n      id\n      title\n      description\n      releaseDate\n      thumbnailUrl\n      actors {\n        id\n        name\n        surname\n      }\n      genres {\n        id\n        name\n      }\n      director {\n        id\n        name\n        surname\n      }\n      producer {\n        id\n        name\n      }\n    }\n  }\n}": typeof types.GetFilmsDocument,
 };
 const documents: Documents = {
+    "mutation UploadBlob($file: Upload!) {\n  uploadBlob(file: $file) {\n    id\n    fileName\n    url\n  }\n}": types.UploadBlobDocument,
     "mutation CreateFilm($input: CreateFilmInput!) {\n  createFilm(input: $input) {\n    id\n    title\n  }\n}\n\nmutation EditFilm($input: EditFilmInput!) {\n  editFilm(input: $input) {\n    id\n    title\n  }\n}\n\nmutation DeleteFilm($filmId: String!) {\n  deleteFilm(filmId: $filmId)\n}": types.CreateFilmDocument,
     "query GetFilms($first: Int!, $after: String, $where: FilmFilterInput, $order: [FilmSortInput!]) {\n  films(first: $first, after: $after, where: $where, order: $order) {\n    nodes {\n      id\n      title\n      description\n      releaseDate\n      thumbnailUrl\n      director {\n        id\n        name\n        surname\n      }\n      genres {\n        id\n        name\n      }\n    }\n    pageInfo {\n      hasNextPage\n      hasPreviousPage\n      startCursor\n      endCursor\n    }\n  }\n}\n\nquery GetFilmById($id: UUID!) {\n  films(first: 1, where: {id: {eq: $id}}) {\n    nodes {\n      id\n      title\n      description\n      releaseDate\n      thumbnailUrl\n      actors {\n        id\n        name\n        surname\n      }\n      genres {\n        id\n        name\n      }\n      director {\n        id\n        name\n        surname\n      }\n      producer {\n        id\n        name\n      }\n    }\n  }\n}": types.GetFilmsDocument,
 };
@@ -36,6 +38,10 @@ const documents: Documents = {
  */
 export function graphql(source: string): unknown;
 
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "mutation UploadBlob($file: Upload!) {\n  uploadBlob(file: $file) {\n    id\n    fileName\n    url\n  }\n}"): (typeof documents)["mutation UploadBlob($file: Upload!) {\n  uploadBlob(file: $file) {\n    id\n    fileName\n    url\n  }\n}"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

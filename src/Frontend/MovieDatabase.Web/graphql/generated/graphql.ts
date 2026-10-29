@@ -25,6 +25,7 @@ export type CreateFilmInput = {
   genres: Array<GenrePlaceholderInput>;
   producer: ProducerPlaceholderInput;
   releaseDate: string;
+  thumbnail?: string | null | undefined;
   title: string;
 };
 
@@ -73,6 +74,7 @@ export type EditFilmInput = {
   id: string;
   producer: EditFilmProducerPlaceholderInput;
   releaseDate: string;
+  thumbnail?: string | null | undefined;
   title: string;
 };
 
@@ -197,6 +199,13 @@ export type UuidOperationFilterInput = {
   nlte?: string | null | undefined;
 };
 
+export type UploadBlobMutationVariables = Exact<{
+  file: File;
+}>;
+
+
+export type UploadBlobMutation = { uploadBlob: { id: string, fileName: string, url: string } };
+
 export type CreateFilmMutationVariables = Exact<{
   input: CreateFilmInput;
 }>;
@@ -236,6 +245,7 @@ export type GetFilmByIdQueryVariables = Exact<{
 export type GetFilmByIdQuery = { films: { nodes: Array<{ id: string, title: string, description: string | null, releaseDate: string, thumbnailUrl: string | null, actors: Array<{ id: string, name: string, surname: string }>, genres: Array<{ id: string, name: string }>, director: { id: string, name: string, surname: string }, producer: { id: string, name: string } }> | null } | null };
 
 
+export const UploadBlobDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UploadBlob"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"file"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Upload"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uploadBlob"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"file"},"value":{"kind":"Variable","name":{"kind":"Name","value":"file"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"fileName"}},{"kind":"Field","name":{"kind":"Name","value":"url"}}]}}]}}]} as unknown as DocumentNode<UploadBlobMutation, UploadBlobMutationVariables>;
 export const CreateFilmDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateFilm"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateFilmInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createFilm"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}}]}}]}}]} as unknown as DocumentNode<CreateFilmMutation, CreateFilmMutationVariables>;
 export const EditFilmDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"EditFilm"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"EditFilmInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"editFilm"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}}]}}]}}]} as unknown as DocumentNode<EditFilmMutation, EditFilmMutationVariables>;
 export const DeleteFilmDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteFilm"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filmId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteFilm"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filmId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filmId"}}}]}]}}]} as unknown as DocumentNode<DeleteFilmMutation, DeleteFilmMutationVariables>;

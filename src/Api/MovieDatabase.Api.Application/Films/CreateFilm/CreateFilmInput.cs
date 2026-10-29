@@ -7,7 +7,8 @@ public sealed record CreateFilmInput(
     CreateFilmInput.ActorPlaceholder[] Actors,
     CreateFilmInput.GenrePlaceholder[] Genres,
     CreateFilmInput.DirectorPlaceholder Director,
-    CreateFilmInput.ProducerPlaceholder Producer)
+    CreateFilmInput.ProducerPlaceholder Producer,
+    string? Thumbnail = null)
 {
     public sealed record ActorPlaceholder(string? Id, string? Name, string? Surname);
 

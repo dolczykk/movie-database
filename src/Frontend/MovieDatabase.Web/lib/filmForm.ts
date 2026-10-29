@@ -22,6 +22,18 @@ import type { EditFilmInput, GetFilmByIdQuery } from '../graphql/generated/graph
  * queries). They are optional because the create page's new film has no
  * sub-document ids yet -- `toFilmFormValue` below is what populates them,
  * for the edit page only.
+ *
+ * `thumbnailId` is the one field that breaks the "always a complete film"
+ * rule above, and is never populated by `toFilmFormValue`: the raw blob id
+ * backing a film's thumbnail is intentionally never exposed over GraphQL
+ * (only the computed, display-only `thumbnailUrl` is), so there is nothing
+ * to hydrate it from. It is set exactly once, by `FilmForm`'s own
+ * `ImageUploader` integration, only when the visitor picks a new image
+ * during the current session. `undefined` always means "no new image was
+ * picked this session" -- for create that means no thumbnail at all; for
+ * edit it specifically does NOT mean "clear the thumbnail"
+ * (`EditFilmRequestHandler` preserves the existing one when `thumbnail` is
+ * omitted/null), since there is no remove-thumbnail affordance in the UI.
  */
 export interface FilmFormValue {
   title: string
@@ -31,6 +43,7 @@ export interface FilmFormValue {
   producer: { id?: string, name: string }
   actors: Array<{ id?: string, name: string, surname: string }>
   genres: Array<{ id?: string, name: string }>
+  thumbnailId?: string
 }
 
 /**
@@ -145,5 +158,6 @@ export function toEditFilmInput(id: string, value: FilmFormValue): EditFilmInput
     producer: { id: value.producer.id, name: value.producer.name },
     actors: value.actors.map(actor => ({ id: actor.id, name: actor.name, surname: actor.surname })),
     genres: value.genres.map(genre => ({ id: genre.id, name: genre.name })),
+    thumbnail: value.thumbnailId ?? null,
   }
 }

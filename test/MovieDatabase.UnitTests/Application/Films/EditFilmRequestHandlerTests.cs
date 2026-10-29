@@ -42,7 +42,7 @@ public class EditFilmRequestHandlerTests
         // Assert
         result.ShouldNotBeNull();
         result.Title.ShouldBe(request.Title);
-        _mockFilmRepository.Received(1).Add(Arg.Is<Film>(f =>
+        _mockFilmRepository.Received(1).Update(Arg.Is<Film>(f =>
             f.Id == filmId &&
             f.Title == request.Title));
         await _mockUnitOfWork.Received(1).Commit();
@@ -104,7 +104,7 @@ public class EditFilmRequestHandlerTests
         await _handler.HandleAsync(request);
 
         // Assert
-        _mockFilmRepository.Received(1).Add(Arg.Is<Film>(f =>
+        _mockFilmRepository.Received(1).Update(Arg.Is<Film>(f =>
             f.Title == "New Title" &&
             f.Description == "New Description" &&
             f.ReleaseDate == new DateOnly(2025, 1, 1) &&
@@ -133,7 +133,7 @@ public class EditFilmRequestHandlerTests
         await _handler.HandleAsync(request);
 
         // Assert
-        _mockFilmRepository.Received(1).Add(Arg.Any<Film>());
+        _mockFilmRepository.Received(1).Update(Arg.Any<Film>());
         await _mockFilmRepository.Received(1).GetById(filmIdString);
         await _mockUnitOfWork.Received(1).Commit();
     }
@@ -201,11 +201,51 @@ public class EditFilmRequestHandlerTests
         await _handler.HandleAsync(request);
 
         // Assert
-        _mockFilmRepository.Received(1).Add(Arg.Is<Film>(f =>
+        _mockFilmRepository.Received(1).Update(Arg.Is<Film>(f =>
             f.Actors[0].Id == Guid.Parse(actorId) &&
             f.Genres[0].Id == Guid.Parse(genreId) &&
             f.Director.Id == Guid.Parse(directorId) &&
             f.Producer.Id == Guid.Parse(producerId)));
+        await _mockUnitOfWork.Received(1).Commit();
+    }
+
+    [Fact]
+    public async Task HandleAsync_WithNewThumbnail_ShouldOverwriteExistingThumbnail()
+    {
+        // Arrange
+        var filmId = Guid.NewGuid();
+        var filmIdString = filmId.ToString();
+        var existingFilm = TestDataBuilder.CreateValidFilm(id: filmId, thumbnail: "old-blob-id");
+        var request = CreateValidEditRequest(filmIdString) with { Thumbnail = "new-blob-id" };
+
+        _mockFilmRepository.GetById(filmIdString)
+            .Returns(Task.FromResult<Film?>(existingFilm));
+
+        // Act
+        await _handler.HandleAsync(request);
+
+        // Assert
+        _mockFilmRepository.Received(1).Update(Arg.Is<Film>(f => f.Thumbnail == "new-blob-id"));
+        await _mockUnitOfWork.Received(1).Commit();
+    }
+
+    [Fact]
+    public async Task HandleAsync_WithNullThumbnail_ShouldPreserveExistingThumbnail()
+    {
+        // Arrange
+        var filmId = Guid.NewGuid();
+        var filmIdString = filmId.ToString();
+        var existingFilm = TestDataBuilder.CreateValidFilm(id: filmId, thumbnail: "old-blob-id");
+        var request = CreateValidEditRequest(filmIdString);
+
+        _mockFilmRepository.GetById(filmIdString)
+            .Returns(Task.FromResult<Film?>(existingFilm));
+
+        // Act
+        await _handler.HandleAsync(request);
+
+        // Assert
+        _mockFilmRepository.Received(1).Update(Arg.Is<Film>(f => f.Thumbnail == "old-blob-id"));
         await _mockUnitOfWork.Received(1).Commit();
     }
 

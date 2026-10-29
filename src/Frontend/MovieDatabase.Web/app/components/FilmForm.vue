@@ -2,6 +2,7 @@
 import { z } from 'zod'
 import type { FilmFormValue } from '../../lib/filmForm'
 import { hydrateFormState, sanitizeFilmFormValue } from '../../lib/filmForm'
+import ImageUploader from './ImageUploader.vue'
 
 // Re-exported so Task 18's edit page (and anything else building on this
 // form) can import the contract type directly from the component, e.g.
@@ -13,9 +14,27 @@ const props = defineProps<{
   initial?: FilmFormValue | null
   pending?: boolean
   submitLabel?: string
+  /** Display-only: the film's existing thumbnail, from the fetched film on
+   * the edit page. Absent on the create page, where there is nothing yet. */
+  currentThumbnailUrl?: string | null
 }>()
 
 const emit = defineEmits<{ submit: [value: FilmFormValue] }>()
+
+// Holds a newly uploaded image for this session only -- see
+// `FilmFormValue.thumbnailId`'s doc comment in `lib/filmForm.ts` for why
+// this is never hydrated from `initial`.
+const pendingThumbnail = ref<{ id: string, url: string } | null>(null)
+
+// A new upload always wins over the film's existing thumbnail for preview
+// purposes, but only `pendingThumbnail.id` (never its `url`) is ever sent
+// to the server -- `url` is just-uploaded-original-image URL, good enough
+// to preview immediately without waiting on the async thumbnail pipeline.
+const previewUrl = computed(() => pendingThumbnail.value?.url ?? props.currentThumbnailUrl ?? null)
+
+function onThumbnailUploaded(blob: { id: string, fileName: string, url: string }) {
+  pendingThumbnail.value = { id: blob.id, url: blob.url }
+}
 
 // `editFilm` overwrites every field it receives (`EditFilmRequestHandler`
 // assigns `Title`/`Description`/`ReleaseDate`/`Director`/`Producer`/`Actors`/
@@ -58,12 +77,26 @@ function removeGenre(index: number) {
 }
 
 function onSubmit() {
-  emit('submit', sanitizeFilmFormValue(state))
+  emit('submit', { ...sanitizeFilmFormValue(state), thumbnailId: pendingThumbnail.value?.id })
 }
 </script>
 
 <template>
   <UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
+    <div>
+      <span class="mb-2 block text-sm font-medium">Cover image</span>
+      <img
+        v-if="previewUrl"
+        :src="previewUrl"
+        alt=""
+        class="mb-2 aspect-video w-full max-w-xs rounded object-cover"
+      >
+      <div v-else class="mb-2 flex aspect-video w-full max-w-xs items-center justify-center rounded bg-gray-100 text-sm text-gray-400 dark:bg-gray-800 dark:text-gray-500">
+        No image selected
+      </div>
+      <ImageUploader @uploaded="onThumbnailUploaded" />
+    </div>
+
     <UFormField label="Title" name="title">
       <UInput v-model="state.title" class="w-full" />
     </UFormField>

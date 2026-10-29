@@ -310,6 +310,38 @@ public class CreateFilmRequestHandlerTests
     }
 
     [Fact]
+    public async Task HandleAsync_WithThumbnail_ShouldSetFilmThumbnail()
+    {
+        // Arrange
+        var request = CreateValidRequest() with { Thumbnail = "blob-id-123" };
+        _mockFilmRepository.GetByTitle(Arg.Any<string>())
+            .Returns(Task.FromResult<Film?>(null));
+
+        // Act
+        await _handler.HandleAsync(request);
+
+        // Assert
+        _mockFilmRepository.Received(1).Add(Arg.Is<Film>(f => f.Thumbnail == "blob-id-123"));
+        await _mockUnitOfWork.Received(1).Commit();
+    }
+
+    [Fact]
+    public async Task HandleAsync_WithoutThumbnail_ShouldLeaveThumbnailNull()
+    {
+        // Arrange
+        var request = CreateValidRequest();
+        _mockFilmRepository.GetByTitle(Arg.Any<string>())
+            .Returns(Task.FromResult<Film?>(null));
+
+        // Act
+        await _handler.HandleAsync(request);
+
+        // Assert
+        _mockFilmRepository.Received(1).Add(Arg.Is<Film>(f => f.Thumbnail == null));
+        await _mockUnitOfWork.Received(1).Commit();
+    }
+
+    [Fact]
     public async Task HandleAsync_WithEmptyActorsList_ShouldCreateFilmWithNoActors()
     {
         // Arrange

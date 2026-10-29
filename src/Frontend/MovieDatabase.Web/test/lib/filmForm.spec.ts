@@ -145,6 +145,12 @@ describe('toFilmFormValue', () => {
     expect(value.actors).toEqual([])
     expect(value.genres).toEqual([])
   })
+
+  it('never populates thumbnailId from a fetched film (the raw blob id is never exposed over GraphQL)', () => {
+    const value = toFilmFormValue(fetchedFilm)
+
+    expect(value.thumbnailId).toBeUndefined()
+  })
 })
 
 describe('toEditFilmInput', () => {
@@ -178,6 +184,7 @@ describe('toEditFilmInput', () => {
       producer: { id: undefined, name: baseValue.producer.name },
       actors: [],
       genres: [],
+      thumbnail: null,
     })
   })
 
@@ -202,6 +209,18 @@ describe('toEditFilmInput', () => {
 
     expect(input.actors[0]?.id).toBeUndefined()
     expect(input.genres[0]?.id).toBeUndefined()
+  })
+
+  it('carries thumbnailId through as thumbnail when a new image was uploaded this session', () => {
+    const input = toEditFilmInput('film-1', { ...baseValue, thumbnailId: 'blob-123' })
+
+    expect(input.thumbnail).toBe('blob-123')
+  })
+
+  it('sends thumbnail: null when no new image was uploaded this session, to preserve the existing one', () => {
+    const input = toEditFilmInput('film-1', baseValue)
+
+    expect(input.thumbnail).toBeNull()
   })
 })
 

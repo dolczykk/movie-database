@@ -24,6 +24,7 @@ public sealed class CreateFilmRequestHandler(IFilmRepository filmRepository, IUn
             Title = filmTitle,
             ReleaseDate = request.ReleaseDate,
             Description = request.Description?.TrimStart().TrimEnd() ?? string.Empty,
+            Thumbnail = request.Thumbnail,
             Actors = request.Actors.Select(a => new Actor
             {
                 Name = a.Name,

@@ -106,6 +106,12 @@ async function onDelete() {
 
     <UAlert v-if="error" color="error" :description="error" class="mb-4" />
 
-    <FilmForm :initial="initial" :pending="pending" submit-label="Save changes" @submit="onSubmit" />
+    <FilmForm
+      :initial="initial"
+      :current-thumbnail-url="loadedFilm.thumbnailUrl"
+      :pending="pending"
+      submit-label="Save changes"
+      @submit="onSubmit"
+    />
   </div>
 </template>

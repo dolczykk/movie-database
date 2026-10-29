@@ -44,7 +44,8 @@ public static class TestDataBuilder
         List<Genre>? genres = null,
         DirectorInfo? director = null,
         ProducerInfo? producer = null,
-        string? creatorId = null)
+        string? creatorId = null,
+        string? thumbnail = null)
     {
         return new Film
         {
@@ -56,7 +57,8 @@ public static class TestDataBuilder
             Genres = genres ?? [new Genre { Name = "Drama" }],
             Director = director ?? new DirectorInfo { Name = "Test", Surname = "Director" },
             Producer = producer ?? new ProducerInfo { Name = "Test Studios" },
-            CreatorId = creatorId ?? Guid.NewGuid().ToString()
+            CreatorId = creatorId ?? Guid.NewGuid().ToString(),
+            Thumbnail = thumbnail
         };
     }
 }

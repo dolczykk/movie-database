@@ -2,11 +2,6 @@
 import { describeUploadClientError } from '../../lib/uploadError'
 import { validateUpload } from '../../lib/uploadValidation'
 
-// Not mounted on any page yet: `CreateFilmInput`/`EditFilmInput` have no
-// thumbnail/blob field (the API's write path for `Film.Thumbnail` was
-// removed before this plan began), so there is nothing to attach an
-// uploaded blob to. Built and tested standalone so that wiring it up, once
-// that write path exists, is a small change rather than a new feature.
 const emit = defineEmits<{ uploaded: [blob: { id: string, fileName: string, url: string }] }>()
 
 const error = ref<string | null>(null)

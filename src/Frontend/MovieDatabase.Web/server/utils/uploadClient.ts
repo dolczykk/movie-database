@@ -1,4 +1,6 @@
 import type { H3Event } from 'h3'
+import { print } from 'graphql'
+import { UploadBlobDocument } from '../../graphql/generated/graphql'
 
 export interface UploadedBlob {
   id: string
@@ -11,15 +13,10 @@ export interface UploadBlobEnvelope {
   errors?: Array<{ message: string }>
 }
 
-const UPLOAD_BLOB_MUTATION = `
-  mutation UploadBlob($file: Upload!) {
-    uploadBlob(file: $file) {
-      id
-      fileName
-      url
-    }
-  }
-`
+// Printed once from the generated document (`graphql/mutations/blobs.graphql`)
+// rather than hand-written, so a schema change to `uploadBlob` can't drift
+// silently out of sync with this string the way a literal could.
+const UPLOAD_BLOB_MUTATION = print(UploadBlobDocument)
 
 /**
  * Posts one file to the GraphQL API using the GraphQL multipart request
