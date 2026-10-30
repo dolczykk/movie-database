@@ -49,6 +49,17 @@ async function loadMore() {
   await refresh()
 }
 
+// Retries the fetch that just failed, as-is -- it must NOT recompute `cursor`
+// from `pageInfo.value?.endCursor` like `loadMore` does, because a failed
+// fetch leaves `data` (and so `pageInfo`) holding whatever `useAsyncData`
+// resets it to on error, not the last successful page; recomputing from that
+// would silently fall back to `null` and re-fetch the first page instead of
+// retrying the one that failed. `cursor.value` itself is untouched by the
+// failure, so simply re-running the fetch with it is the correct retry.
+async function retryLoadMore() {
+  await refresh()
+}
+
 // Debounced so every keystroke doesn't fire a request; a fresh search always
 // restarts paging from the first page.
 let debounce: ReturnType<typeof setTimeout>
@@ -59,6 +70,21 @@ watch(search, () => {
     void refresh()
   }, 300)
 })
+
+// `pending`/`error` are shared across every fetch this `useAsyncData` key
+// makes -- first load, "load more", and search all flip them. Splitting on
+// `cursor` (`null` only for the first page or a fresh search, exactly
+// `accumulateFilmNodes`'s own replace-vs-append rule) means a background
+// "load more" fetch no longer blanks the whole grid back to a loading
+// skeleton or an error message, discarding films already on screen; only the
+// true first-load/search case still does that, unchanged from before.
+const isInitialLoad = computed(() => pending.value && cursor.value === null)
+const isLoadingMore = computed(() => pending.value && cursor.value !== null)
+const isInitialError = computed(() => !!error.value && cursor.value === null)
+const isLoadMoreError = computed(() => !!error.value && cursor.value !== null)
+
+const sentinel = ref<HTMLDivElement | null>(null)
+useInfiniteScroll(sentinel, loadMore)
 </script>
 
 <template>
@@ -75,11 +101,11 @@ watch(search, () => {
       </div>
     </div>
 
-    <div v-if="pending" class="py-8 text-center text-sm text-gray-500">
+    <div v-if="isInitialLoad" class="py-8 text-center text-sm text-gray-500">
       Loading…
     </div>
 
-    <div v-else-if="error" class="py-8 text-center text-sm text-red-500">
+    <div v-else-if="isInitialError" class="py-8 text-center text-sm text-red-500">
       Something went wrong loading films. Please try again shortly.
     </div>
 
@@ -87,14 +113,21 @@ watch(search, () => {
       No films found.
     </div>
 
-    <div v-else class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      <FilmCard v-for="film in films" :key="film.id" :film="film" />
-    </div>
+    <div v-else>
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <FilmCard v-for="film in films" :key="film.id" :film="film" />
+      </div>
 
-    <div v-if="pageInfo?.hasNextPage" class="mt-6 text-center">
-      <UButton variant="outline" @click="loadMore">
-        Load more
-      </UButton>
+      <div v-if="isLoadMoreError" class="mt-6 flex items-center justify-center gap-3 text-sm text-red-500">
+        <span>Something went wrong loading more films.</span>
+        <UButton size="sm" variant="outline" @click="retryLoadMore">
+          Retry
+        </UButton>
+      </div>
+
+      <div v-if="pageInfo?.hasNextPage" ref="sentinel" data-testid="films-sentinel" class="mt-6 flex justify-center py-4">
+        <span v-if="isLoadingMore" class="text-sm text-gray-500">Loading more…</span>
+      </div>
     </div>
   </div>
 </template>

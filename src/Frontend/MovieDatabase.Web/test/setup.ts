@@ -9,7 +9,13 @@ config.global.stubs = {
   UCard: { template: '<div><slot /></div>' },
   UBadge: { template: '<span><slot /></span>' },
   UButton: { template: '<button><slot /></button>' },
-  UInput: { template: '<input>' },
+  // Wired for v-model (not just a bare `<input>`) because the films list
+  // page's search box needs typed input to actually reach its `search` ref.
+  UInput: {
+    props: ['modelValue'],
+    emits: ['update:modelValue'],
+    template: '<input :value="modelValue" @input="$emit(\'update:modelValue\', $event.target.value)">',
+  },
   UTextarea: { template: '<textarea></textarea>' },
   UFormField: { template: '<div><slot /></div>' },
   // Real UForm runs zod validation before emitting `submit`; stubbed as a
